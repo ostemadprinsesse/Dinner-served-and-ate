@@ -6,9 +6,16 @@ What did we do today
 - Get a overview of the old code
 
 
-Chosen language: javascript with node.js and react frameworks
+Chosen language: javascript with node.js and react frameworks (next.js that works with react)
 
 
 
 Where is the code today?
 - The code was already updated to newer python 3.x instead of 2.x
+
+
+
+
+API OVERVIEW - with https://editor.swagger.io/
+![alt text](image-1.png)
+![alt text](image-2.png)
