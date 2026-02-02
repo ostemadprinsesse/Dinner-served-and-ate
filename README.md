@@ -40,7 +40,7 @@ Hvis du vil pege på en anden databasefil, sæt env variablen:
 Den gamle Flask app ligger i `legacy-flask/app.py` (med `legacy-flask/templates/` og `legacy-flask/static/`), men den bruges ikke længere af Next.js.
 
 ## Mappe overblik
-
+´´´
 legacy/
 ├─ .eslintrc.json
 ├─ .gitignore
@@ -84,3 +84,4 @@ legacy/
 │
 ├─ node_modules/        (genereret)
 └─ .next/               (genereret)
+´´´
