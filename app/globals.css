@@ -1,0 +1,139 @@
+/* Ported from legacy/static/style.css (90s vibe) */
+
+:root {
+  --bg: #cccccc;
+  --panel: #ffffff;
+  --accentPink: #ff0066;
+  --accentBlue: #00ccff;
+  --accentGreen: #00ff00;
+  --headerYellow: #ffcc00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23CCCCCC" width="100" height="100"/><circle cx="50" cy="50" r="20" fill="%23DDDDDD"/></svg>');
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+
+a {
+  text-decoration: none;
+  color: #0000ff;
+}
+
+a:visited {
+  color: #800080;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #ff0000;
+}
+
+h1,
+h2,
+h3 {
+  text-shadow: 2px 2px #000000;
+}
+
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.headerInner {
+  background: var(--headerYellow);
+  border: 3px solid #000;
+  padding: 10px;
+}
+
+.title {
+  margin: 0;
+  font-family: 'Comic Sans MS', Arial, sans-serif;
+  color: var(--accentPink);
+  text-align: center;
+}
+
+.nav {
+  margin-top: 0;
+  background: var(--accentBlue);
+  border: 2px solid #000;
+  padding: 6px;
+  text-align: center;
+}
+
+.navLink {
+  font-family: Arial, sans-serif;
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.content {
+  background: var(--panel);
+  border: 2px solid #000;
+  padding: 20px;
+}
+
+.footer {
+  margin-top: 0;
+  background: var(--accentGreen);
+  border: 2px solid #000;
+  padding: 10px;
+}
+
+.marquee {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.marquee::after {
+  content: " ✨ Welcome to the best recipe site on the World Wide Web! ✨ ✨ Welcome to the best recipe site on the World Wide Web! ✨";
+}
+
+.card {
+  border: 3px solid #000;
+  padding: 10px;
+}
+
+.cardYellow {
+  background: #ffff99;
+}
+
+.cardGreen {
+  background: #ccffcc;
+}
+
+.cardPink {
+  background: #ffccff;
+}
+
+.cardCyan {
+  background: #ccffff;
+}
+
+.muted {
+  color: #333;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.button {
+  display: inline-block;
+  border: 2px solid #000;
+  background: var(--accentPink);
+  color: #fff;
+  padding: 10px 14px;
+  font-weight: 800;
+}
