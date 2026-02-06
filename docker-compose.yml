@@ -1,0 +1,28 @@
+services:
+  # Main Next.js application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dinner-served-app
+    ports:
+      - "4000:3005"  # External port 4000 -> Internal port 3005
+    volumes:
+      # Mount source code for hot reload (changes reflect immediately)
+      - .:/app
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
+      # Persistent storage for SQLite database
+      - sqlite-data:/app/data
+    environment:
+      # Set base URL for internal API calls (uses internal port)
+      - NEXT_PUBLIC_BASE_URL=http://localhost:3005
+      # SQLite database path (stored in persistent volume)
+      - DB_PATH=/app/data/app.db
+    # Restart container automatically if it crashes
+    restart: unless-stopped
+
+# Named volume for SQLite database
+volumes:
+  sqlite-data:
+    name: dinner-served-sqlite

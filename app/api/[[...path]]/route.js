@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { allAsync, getAsync, openDb, runAsync } from '@/lib/db';
 
-function getSegments(ctx) {
-  const segs = ctx?.params?.path;
+async function getSegments(ctx) {
+  const params = await ctx.params;
+  const segs = params?.path;
   if (!segs) return [];
   if (Array.isArray(segs)) return segs.filter(Boolean);
   return [String(segs)].filter(Boolean);
@@ -144,7 +145,7 @@ async function listTags() {
 }
 
 export async function GET(req, ctx) {
-  const segs = getSegments(ctx);
+  const segs = await getSegments(ctx);
 
   // /api
   if (segs.length === 0) return apiOverview();
@@ -187,7 +188,7 @@ export async function GET(req, ctx) {
 }
 
 export async function POST(req, ctx) {
-  const segs = getSegments(ctx);
+  const segs = await getSegments(ctx);
 
   // /api/user/create/
   if (segs[0] === 'user' && segs[1] === 'create' && segs.length === 2) {
@@ -248,7 +249,7 @@ export async function POST(req, ctx) {
 }
 
 export async function PUT(req, ctx) {
-  const segs = getSegments(ctx);
+  const segs = await getSegments(ctx);
 
   // /api/user/me/
   if (segs[0] === 'user' && segs[1] === 'me' && segs.length === 2) {
@@ -290,7 +291,7 @@ export async function PUT(req, ctx) {
 }
 
 export async function PATCH(req, ctx) {
-  const segs = getSegments(ctx);
+  const segs = await getSegments(ctx);
 
   // /api/user/me/
   if (segs[0] === 'user' && segs[1] === 'me' && segs.length === 2) {
@@ -335,7 +336,7 @@ export async function PATCH(req, ctx) {
 }
 
 export async function DELETE(_req, ctx) {
-  const segs = getSegments(ctx);
+  const segs = await getSegments(ctx);
 
   // /api/recipe/recipes/{id}/ (stub)
   if (segs[0] === 'recipe' && segs[1] === 'recipes' && segs.length === 3) {

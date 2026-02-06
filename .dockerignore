@@ -1,0 +1,11 @@
+# Don't copy these into Docker image (keeps it smaller and faster)
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+npm-debug.log*
+Dockerfile
+docker-compose.yml
+.dockerignore

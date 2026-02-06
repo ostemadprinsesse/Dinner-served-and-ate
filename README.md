@@ -7,12 +7,46 @@ Dette repo er migreret til **Next.js + React** for brugerflade og funktionalitet
  
 Krav: Node.js 18+.
 
+### Metode 1: Lokal udvikling (uden Docker)
+
 1. Installer dependencies:
 	- `npm install`
 2. Start dev-server:
 	- `npm run dev`
-3. Åbn:
-	- `http://localhost:3005/`
+3. Åbn	- `http://localhost:3005/`
+
+### Metode 2: Med Docker (anbefalet for team)
+
+Krav: [Docker Desktop](https://www.docker.com/products/docker-desktop/) installeret og kørende.
+
+1. **Start applikationen:**
+   ```bash
+   docker-compose up
+   ```
+   Applikationen vil være tilgængelig på `http://localhost:4000/`
+
+2. **Stop applikationen:**
+   - Tryk `Ctrl+C` i terminalen, eller
+   ```bash
+   docker-compose down
+   ```
+
+3. **Genstart efter kodeændringer:**
+   - Hot reload er aktiveret - dine ændringer vises automatisk
+   - Ved dependency ændringer (package.json):
+   ```bash
+   docker-compose down
+   docker-compose up --build
+   ```
+
+4. **Reset database:**
+   ```bash
+   docker-compose down -v
+   docker-compose up
+   ```
+
+
+**Note:** Docker bruger port 4000, lokal udvikling bruger port 3005.
 
 ## API dokumentation
 
@@ -51,6 +85,9 @@ Hvis du vil pege på en anden databasefil, sæt env variablen:
 ├─ package.json
 ├─ README.md
 ├─ .gitignore
+├─ .dockerignore
+├─ Dockerfile
+├─ docker-compose.yml
 ├─ app/
 │  ├─ globals.css
 │  ├─ layout.js
