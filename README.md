@@ -18,7 +18,7 @@ Krav: Node.js 18+.
 
 - OpenAPI spec: [api-schema.yaml](api-schema.yaml)
 - API overview (Markdown): [API_OVERVIEW.md](API_OVERVIEW.md)
-- Swagger UI (lokalt): `http://localhost:3000/swagger/`
+- Swagger UI (lokalt): `http://localhost:3002/swagger/`
 
 ## Funktionalitet
 
