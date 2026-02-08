@@ -12,3 +12,31 @@ Go through this checklist before the weekend starts:
  Write a simple description in the repos readmefile on how to run your application
  Make sure to Have set up a project and a Kanban board
  Check you issues tab for potetially issues added by me, or others
+
+
+ Her er et forslag til en klar, struktureret og professionel note, du kan lægge direkte ind i din GitHub‑repo. Jeg har samlet alt det, du beskrev, og organiseret det, så det fremstår som en teknisk changelog / projektlog. Du kan selvfølgelig tilpasse den efter behov.
+
+
+
+Project Note – Status & Recent Changes
+
+Port Configuration
+- We have now **committed to port 3005** as the standard for local development.  
+- The port has been finalized in **package.json**.  
+- The Docker environment runs on **port 4000**, while local development without Docker still uses **3005**.
+
+Docker
+- **docker-compose** and the **Dockerfile** have now been pushed to the repository.  
+- The Docker setup should function as expected after the latest push.
+
+Issue & Project Management (Dinner served at ate project)
+- Issue marked as a **bug** (“Something isn't working”).  
+- Moved from *Backlog* → *Done*.  
+- The issue is now **closed as completed**.
+
+REST API Organisation
+- Structure and setup have now been added as part of the REST API organisation.
+
+Tags & Releases
+- Work on **tags and the release flow** is ongoing.
+
