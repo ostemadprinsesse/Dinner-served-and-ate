@@ -13,9 +13,11 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Copy and set permissions for entrypoint script
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
+# Copy and set permissions for entrypoint script.
+# Put it outside /app so the compose bind-mount (.:/app) can't overwrite it.
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
+	&& chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Create data directory for SQLite database
 RUN mkdir -p /app/data
@@ -24,4 +26,4 @@ RUN mkdir -p /app/data
 EXPOSE 3005
 
 # Use entrypoint script to handle database initialization
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
