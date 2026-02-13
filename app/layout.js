@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
         <div className="page">
           <header className="header">
             <div className="headerInner">
-              <h1 className="title">🍳 AWESOME RECIPE COOKBOOK 🍳</h1>
+              <h1 className="title">🍳 Dinner served at ate 🍳</h1>
             </div>
             <nav className="nav">
               <a className="navLink" href="/">🏠 HOME</a>
