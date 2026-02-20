@@ -1,16 +1,8 @@
 # Diary
 # Notes from todays lesson
-SSH keys
-public key - ofte som filen id_rsa.pub 
-private key
-    rsa har noget med algoritmen at gøre
+First we spend a day trying to make virtuel machines but gave up, on the 20feb we succeded on making a VM working with Clauses code to learn, and then we started making one for our projekt. 
 
-<Portal.azure.com>
-Lav en virtuel maskine - klik på linux vm under free services på azure
-Husk at lukke din(e) VM når du ikke bruger dem -så den ikkr ædr sine student credits
 
-- Use existing publis key
-    den er i tekst, du skal have lavet den i powershell, og sæt den ind (vi er ikke sikre på om den sidste del skal med pt fra Claus)
 
 
 ## What did we do today ?

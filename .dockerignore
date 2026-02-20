@@ -3,6 +3,7 @@ node_modules
 .next
 .git
 .gitignore
+.Diary
 *.md
 .env*
 npm-debug.log*
