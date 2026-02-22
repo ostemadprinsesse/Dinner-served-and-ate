@@ -3,20 +3,27 @@ npm![Banner](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejA0ZXBnNHBra3ZtYT
 
 Dette repo er migreret til **Next.js + React** for brugerflade og funktionalitet.
 
+
+
+# How to see our stuff with docker
+checkout data like this http://localhost:5000/api/recipe/tags
+
+See frontend on 
+
+
+
 ## Kør projektet
  
 Krav: Node.js 18+.
 
 ### Metode 1: Lokal udvikling (uden Docker)
-
 1. Installer dependencies:
 	- `npm install`
 2. Start dev-server:
 	- `npm run dev`
 3. Åbn	- `http://localhost:3005/`
 
-### Metode 2: Med Docker (anbefalet for team)
-
+### Metode 2: Med Docker (KIK HER)
 Krav: [Docker Desktop](https://www.docker.com/products/docker-desktop/) installeret og kørende.
 
 1. **Start applikationen:**
