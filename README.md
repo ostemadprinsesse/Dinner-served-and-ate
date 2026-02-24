@@ -6,10 +6,9 @@ Dette repo er migreret til **Next.js + React** for brugerflade og funktionalitet
 
 
 # How to see our stuff with docker
+frontend : http://localhost:4000
 checkout data like this http://localhost:5000/api/recipe/tags
-
-See frontend on 
-
+swagger api overview: http://localhost:4000/swagger 
 
 
 ## Kør projektet

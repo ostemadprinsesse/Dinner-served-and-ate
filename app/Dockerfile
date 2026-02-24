@@ -10,8 +10,8 @@ RUN npm install
 # Copy frontend code
 COPY . .
 
-# Copy API schema from parent directory
-COPY ../api-schema.yaml ./
+# Copy API schema for Swagger UI
+COPY app/swagger/api-schema.yaml ./
 
 EXPOSE 3005
 
