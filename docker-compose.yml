@@ -1,13 +1,13 @@
 services:
   frontend:
     build:
-      context: ./app
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: dinner-served-frontend
     ports:
       - "4000:3005"
     volumes:
-      - ./app:/app
+      - ./frontend:/app
       - /app/node_modules
     environment:
       - NEXT_PUBLIC_BASE_URL=http://backend:5000
