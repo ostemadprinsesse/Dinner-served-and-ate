@@ -1,4 +1,4 @@
-# Don't copy these into Docker image (keeps it smaller and faster)
+# Don't copy these into Docker image with COPY . .
 node_modules
 .next
 .git

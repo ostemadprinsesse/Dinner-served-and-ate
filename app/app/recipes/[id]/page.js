@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 async function getRecipe(id) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3005';
-  const res = await fetch(`${baseUrl}/api/recipe/recipes/${id}/`, { cache: 'no-store' });
+  const res = await fetch(`${baseUrl}/api/recipe/recipes/${id}`, { cache: 'no-store' });
   if (!res.ok) {
     throw new Error(`Failed to fetch recipe ${id}: ${res.status}`);
   }
@@ -34,7 +34,7 @@ export default async function RecipePage({ params }) {
           </>
         ) : null}
         🏷️ <b>Tags:</b>{' '}
-        {recipe.tags.map((t, idx) => (
+        {recipe.tags && recipe.tags.map((t, idx) => (
           <span key={t.id} style={{ color: '#ff0066', fontWeight: 800 }}>
             {t.name}
             {idx < recipe.tags.length - 1 ? ', ' : ''}
@@ -47,7 +47,7 @@ export default async function RecipePage({ params }) {
           🥕 INGREDIENTS 🥕
         </h3>
         <ul style={{ listStyleType: 'square' }}>
-          {recipe.ingredients.map((ing) => (
+          {recipe.ingredients && recipe.ingredients.map((ing) => (
             <li key={ing.id} style={{ margin: '10px 0' }}>
               <b>
                 {ing.amount} {ing.unit}

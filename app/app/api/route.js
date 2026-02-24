@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { allAsync, getAsync, openDb, runAsync } from '@/lib/db';
+import { allAsync, getAsync, openDb, runAsync } from '@/backend/db';
 
 async function getSegments(ctx) {
   const params = await ctx.params;
