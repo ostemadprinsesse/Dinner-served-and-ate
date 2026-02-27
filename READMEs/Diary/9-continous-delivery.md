@@ -1,10 +1,14 @@
+27 feb (d 24 var aflyst da claus var syg.)
+
 # Hvad har vi lavet i dag?
 - genereret et Personal Access Token (PAT), og koblet det til vores repo. Den bruges de steder man normalt ville have brugt password til github, feks når docker skal logge in i GitHub Container Registry. DEn blev oprettet i opgave 02. 
+- Jonas lavede et script der starter ressourcegruppe, VM, installerer den og starter vores side med Docker
 
 
 
 ## Problemer i dag
-- Selvom vi alle er admin, kan vi se at det skal godkendes (nok af Føen <3 )at vi vil lave en PAT. Føen var langsom til at svare, så vi kunne ikke komme videre med opgaven i lang tid ;(   
+- Selvom vi alle er admin, kan vi se at det skal godkendes (nok af Føen <3 )at vi vil lave en PAT. Føen var langsom til at svare, så vi kunne ikke komme videre
+- Desuden var det ikke til at finde ud af hvordan/hvor den skulle godkendes så det vender vi tilbage med
 
 # Opgaver i timen 
 
@@ -48,7 +52,6 @@ Det betyder ikke, at den kører som en hjemmeside.
 docker pull ghcr.io/<dit_org>/frontend:latest
 docker pull ghcr.io/<dit_org>/backend:latest
 
-Jonas arbejder på et script man kan kopiere ind der starter ressourcegruppe, VM, installerer den og starter vores side med Docker
 
 Flow:
 GitHub → (gemmer image)
