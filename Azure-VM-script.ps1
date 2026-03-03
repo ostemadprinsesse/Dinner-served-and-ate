@@ -16,6 +16,35 @@ Write-Host "Logger ind i Azure..."
 az login
 
 # ==============================
+# Tjek om resource group findes
+# ==============================
+
+$rgExists = az group exists --name $resourceGroupName
+
+if ($rgExists -eq "true") {
+    Write-Host "Resource group findes allerede. Sletter den..."
+    
+    az group delete `
+        --name $resourceGroupName `
+        --yes `
+        --no-wait
+
+    Write-Host "Venter på at resource group bliver slettet..."
+    
+    # Vent indtil den faktisk er væk
+    do {
+        Start-Sleep -Seconds 5
+        $rgExists = az group exists --name $resourceGroupName
+    } while ($rgExists -eq "true")
+
+    Write-Host "Resource group er slettet."
+}
+else {
+    Write-Host "Resource group findes ikke. Fortsætter..."
+}
+
+
+# ==============================
 # Opret Resource Group
 # ==============================
 
