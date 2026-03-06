@@ -49,7 +49,7 @@ jobs:
 
 # claus kode 
   deploy:
-    needs: build
+    needs: [build-frontend, build-backend]
     runs-on: ubuntu-latest
     env:
       SSH_USER: ${{ secrets.SSH_USER }}
