@@ -11,6 +11,7 @@ We shifted to better-sqlite3 because Nikoletas computer dident like normal sqlli
 ## Choosing which branching flow we wanna use
 # - the task was to chose one to use, and one for plan B
 We wanna choose Github Flow - these notes are from Claus' github
+(billede here pls)
 
 '''
 Main Idea: Simplified workflow with a single main branch and short-lived feature branches.

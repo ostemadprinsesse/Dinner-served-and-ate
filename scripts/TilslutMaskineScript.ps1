@@ -2,7 +2,7 @@ $resourceGroupName = "dinner-served-and-ate-rg"
 $location = "norwayeast"
 $vmName = "dinner-served-and-ate-vm"
 $adminUsername = "azureuser"
-$sshPublicKeyPath = "$HOME\.ssh\id_rsa.pub"
+$sshPublicKeyPath = "$HOME\.ssh\DINNERKEY\id_rsa.pub"
 
 # ==============================
 # Login til Azure
@@ -30,4 +30,4 @@ Write-Host "VM Public IP: $publicIp"
 az vm open-port --resource-group $resourceGroupName --name $vmName --port 80 --priority 300
 
 #SSH til VM
-ssh azureuser@$publicIp
+ssh azureuser@$publicIp 
