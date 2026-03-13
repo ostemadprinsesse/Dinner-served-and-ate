@@ -1,0 +1,16 @@
+We are going to add git hooks that works for javascript - its called Husky
+    a git hook laver en opgave på et bestemt tidspunkt - vi vil tilføje linting fix ved pre-commit
+    Det vil sige at hvis man committer, så skal git hook tjekke om koden er ordenlig efter vores retningslinjer, og rette ting som 
+        - whitespace
+        - at man har lavet indrykninger hvor det ikke er nødvendigt
+        - og man vil få fejlbeskeder omkring unsued variabler
+        - check yaml for fejl ifm indryk osv
+        - Dette vil kunne ses i git historikken
+        - abort commits hvor noget ikke er i orden (ubrugte variabler)
+
+
+We are also added linting via a linting.yml under -github/workflows
+Vi vil bruge ESlint bibliotektet til det, fordi det er til react <3
+
+Hvis man heri vælger on: push så vil Github Actions også holde med kvaliteten. Vi vælger at vores linting.yml ikke skal rette koden, men kun tjekke den, da en retning her ikke blive være del af git historikken. 
+I linting.yml vil man også kunne tilføje tests (feks unit test), og det kunne være nice. 

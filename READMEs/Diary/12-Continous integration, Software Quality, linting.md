@@ -1,7 +1,9 @@
 # Diary 10 marts
 
 ## What we did today
-- We set up branch protection rule. We choosed to use the number for merging to be 2, as there are always 2 people attending class.
+- We set up branch protection rule. We choosed to use the number for merging to be 2 if you are mergeing to main, as there are always 2 people attending class. 
+
+This also means we might have to start using developbranch so we can merge into main when there is a new "release"
 
 ![alt text](image-3.png)
 
