@@ -1,13 +1,14 @@
 {
   "name": "dinner-served-and-ate",
   "private": true,
-"scripts": {
-  "dev": "next dev -p 3005",
-  "build": "next build",
-  "start": "next start",
-  "lint": "standard",
-  "lint:fix": "standard --fix"
-},
+  "scripts": {
+    "dev": "next dev -p 3005",
+    "build": "next build",
+    "start": "next start",
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "format": "prettier --write ."
+  },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
     "js-yaml": "^4.1.1",
@@ -19,11 +20,16 @@
     "swagger-ui-react": "^5.31.0"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^10.1.8",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.6.0",
     "globals": "^17.4.0",
+    "prettier": "^3.8.1",
     "standard": "^17.1.2"
+  },
+  "eslintConfig": {
+    "extends": ["standard", "prettier"]
   }
 }

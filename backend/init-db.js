@@ -1,13 +1,13 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Database from 'better-sqlite3'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-//File written by Mistral AI
+// File written by Mistral AI
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, 'data', 'app.db');
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const dbPath = path.join(__dirname, 'data', 'app.db')
 
-const db = new Database(dbPath);
+const db = new Database(dbPath)
 
 // Create tables
 db.exec(`
@@ -58,25 +58,25 @@ db.exec(`
     FOREIGN KEY(tag_id) REFERENCES tags(id),
     UNIQUE(recipe_id, tag_id)
   );
-`);
+`)
 
 // Insert sample data
 db.prepare('INSERT OR IGNORE INTO users VALUES (NULL, ?, ?, ?)').run(
   'test@example.com',
   'hashed_password_123',
   'Test User'
-);
+)
 
-db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Tomatoes', 'kg', 'Vegetables');
-db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Garlic', 'cloves', 'Vegetables');
-db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Olive Oil', 'ml', 'Oils');
-db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Pasta', 'g', 'Grains');
-db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Basil', 'g', 'Herbs');
+db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Tomatoes', 'kg', 'Vegetables')
+db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Garlic', 'cloves', 'Vegetables')
+db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Olive Oil', 'ml', 'Oils')
+db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Pasta', 'g', 'Grains')
+db.prepare('INSERT OR IGNORE INTO ingredients VALUES (NULL, ?, ?, ?)').run('Basil', 'g', 'Herbs')
 
-db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Italian');
-db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Vegetarian');
-db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Quick');
-db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Dinner');
+db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Italian')
+db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Vegetarian')
+db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Quick')
+db.prepare('INSERT OR IGNORE INTO tags VALUES (NULL, ?)').run('Dinner')
 
 db.prepare('INSERT OR IGNORE INTO recipes VALUES (NULL, ?, ?, ?, ?, ?)').run(
   'Simple Pasta Tomato',
@@ -84,7 +84,7 @@ db.prepare('INSERT OR IGNORE INTO recipes VALUES (NULL, ?, ?, ?, ?, ?)').run(
   25,
   '8.50',
   ''
-);
+)
 
 db.prepare('INSERT OR IGNORE INTO recipes VALUES (NULL, ?, ?, ?, ?, ?)').run(
   'Garlic Pasta Aglio e Olio',
@@ -92,28 +92,28 @@ db.prepare('INSERT OR IGNORE INTO recipes VALUES (NULL, ?, ?, ?, ?, ?)').run(
   15,
   '5.00',
   ''
-);
+)
 
 // Associate tags with recipes
-db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(1, 1); // Recipe 1, Italian tag
-db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(1, 2); // Recipe 1, Vegetarian tag
-db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(1, 4); // Recipe 1, Dinner tag
-db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(2, 1); // Recipe 2, Italian tag
-db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(2, 2); // Recipe 2, Vegetarian tag
-db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(2, 3); // Recipe 2, Quick tag
+db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(1, 1) // Recipe 1, Italian tag
+db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(1, 2) // Recipe 1, Vegetarian tag
+db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(1, 4) // Recipe 1, Dinner tag
+db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(2, 1) // Recipe 2, Italian tag
+db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(2, 2) // Recipe 2, Vegetarian tag
+db.prepare('INSERT OR IGNORE INTO recipe_tags VALUES (NULL, ?, ?)').run(2, 3) // Recipe 2, Quick tag
 
 // Associate ingredients with recipes
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 1, '400', 'g'); // Tomatoes
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 2, '3', 'cloves'); // Garlic
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 3, '50', 'ml'); // Olive Oil
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 4, '400', 'g'); // Pasta
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 5, '10', 'g'); // Basil
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 1, '400', 'g') // Tomatoes
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 2, '3', 'cloves') // Garlic
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 3, '50', 'ml') // Olive Oil
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 4, '400', 'g') // Pasta
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(1, 5, '10', 'g') // Basil
 
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(2, 4, '400', 'g'); // Pasta
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(2, 2, '5', 'cloves'); // Garlic
-db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(2, 3, '100', 'ml'); // Olive Oil
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(2, 4, '400', 'g') // Pasta
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(2, 2, '5', 'cloves') // Garlic
+db.prepare('INSERT OR IGNORE INTO recipe_ingredients VALUES (NULL, ?, ?, ?, ?)').run(2, 3, '100', 'ml') // Olive Oil
 
-console.log('✅ Database initialized with schema and sample data');
-console.log(`📁 Database: ${dbPath}`);
+console.log('✅ Database initialized with schema and sample data')
+console.log(`📁 Database: ${dbPath}`)
 
-db.close();
+db.close()

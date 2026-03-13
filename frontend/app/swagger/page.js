@@ -1,22 +1,21 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import yaml from 'js-yaml';
+import fs from 'node:fs'
+import path from 'node:path'
+import yaml from 'js-yaml'
 
-import SwaggerUIClient from './SwaggerUIClient';
-import { fileURLToPath } from 'url';
+import SwaggerUIClient from './SwaggerUIClient'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export const metadata = {
-  title: 'Swagger UI',
-};
+  title: 'Swagger UI'
+}
 
-export default function SwaggerPage() {
-  const schemaPath = path.join(__dirname, 'api-schema.yaml');
-  const schemaYaml = fs.readFileSync(schemaPath, 'utf8');
-  const spec = yaml.load(schemaYaml);
+export default function SwaggerPage () {
+  const schemaPath = path.join(__dirname, 'api-schema.yaml')
+  const schemaYaml = fs.readFileSync(schemaPath, 'utf8')
+  const spec = yaml.load(schemaYaml)
 
   return (
     <main>
@@ -26,5 +25,5 @@ export default function SwaggerPage() {
       </p>
       <SwaggerUIClient spec={spec} />
     </main>
-  );
+  )
 }

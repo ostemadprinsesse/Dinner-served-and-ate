@@ -1,16 +1,16 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
-async function getRecipes() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3005';
-  const res = await fetch(`${baseUrl}/api/recipe/recipes`, { cache: 'no-store' });
+async function getRecipes () {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3005'
+  const res = await fetch(`${baseUrl}/api/recipe/recipes`, { cache: 'no-store' })
   if (!res.ok) {
-    throw new Error(`Failed to fetch recipes: ${res.status}`);
+    throw new Error(`Failed to fetch recipes: ${res.status}`)
   }
-  return res.json();
+  return res.json()
 }
 
-export default async function Home() {
-  const recipes = await getRecipes();
+export default async function Home () {
+  const recipes = await getRecipes()
 
   return (
     <div style={{ padding: '20px' }}>
@@ -22,7 +22,7 @@ export default async function Home() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '30px' }}>
         {recipes.map((recipe) => (
           <Link key={recipe.id} href={`/recipes/${recipe.id}`} style={{ textDecoration: 'none' }}>
-            <div className="card cardGreen" style={{ cursor: 'pointer', transition: 'transform 0.2s', height: '100%' }}>
+            <div className='card cardGreen' style={{ cursor: 'pointer', transition: 'transform 0.2s', height: '100%' }}>
               <h2 style={{ fontFamily: 'Comic Sans MS, Arial, sans-serif', color: '#0000ff', marginBottom: '10px' }}>
                 {recipe.title}
               </h2>
@@ -42,12 +42,12 @@ export default async function Home() {
       </div>
 
       <div style={{ marginTop: '40px', textAlign: 'center' }}>
-        <Link href="/swagger" style={{ textDecoration: 'none' }}>
+        <Link href='/swagger' style={{ textDecoration: 'none' }}>
           <button style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}>
             📚 API Documentation
           </button>
         </Link>
       </div>
     </div>
-  );
+  )
 }
