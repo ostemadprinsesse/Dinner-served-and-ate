@@ -5,6 +5,7 @@ This document shows how the Flask application could be converted to use Next.js 
 ## Current Architecture (Flask)
 
 The current application uses:
+
 - Flask for both frontend (templates) and backend (API)
 - SQLite database
 - Server-side rendering with Jinja2 templates
@@ -21,6 +22,7 @@ Next.js Frontend (React)  ↔  API Backend (Flask/FastAPI/Node.js)  ↔  SQLite 
 ### 1. Separate Frontend and Backend
 
 Instead of Flask serving both HTML templates and API endpoints, we would:
+
 - Create a Next.js application for the frontend
 - Keep Flask (or convert to FastAPI/Node.js) as a dedicated API backend
 - Use API calls from React to fetch data
@@ -58,7 +60,7 @@ dinner-served-at-ate/
 ### RecipeCard.js (React Component)
 
 ```jsx
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function RecipeCard({ recipe }) {
   return (
@@ -67,8 +69,10 @@ export default function RecipeCard({ recipe }) {
       <p>Time: {recipe.time_minutes} minutes</p>
       <p>Price: ${recipe.price}</p>
       <div className="tags">
-        {recipe.tags.map(tag => (
-          <span key={tag.id} className="tag">{tag.name}</span>
+        {recipe.tags.map((tag) => (
+          <span key={tag.id} className="tag">
+            {tag.name}
+          </span>
         ))}
       </div>
       <Link href={`/recipes/${recipe.id}`}>
@@ -82,10 +86,10 @@ export default function RecipeCard({ recipe }) {
 ### pages/index.js (Home Page)
 
 ```jsx
-import { useState, useEffect } from 'react';
-import RecipeCard from '../components/RecipeCard';
-import Layout from '../components/Layout';
-import { fetchRecipes } from '../lib/api';
+import { useState, useEffect } from "react";
+import RecipeCard from "../components/RecipeCard";
+import Layout from "../components/Layout";
+import { fetchRecipes } from "../lib/api";
 
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
@@ -107,14 +111,24 @@ export default function Home() {
     loadRecipes();
   }, []);
 
-  if (loading) return <Layout><div>Loading...</div></Layout>;
-  if (error) return <Layout><div>Error: {error}</div></Layout>;
+  if (loading)
+    return (
+      <Layout>
+        <div>Loading...</div>
+      </Layout>
+    );
+  if (error)
+    return (
+      <Layout>
+        <div>Error: {error}</div>
+      </Layout>
+    );
 
   return (
     <Layout>
       <h1>Dinner Served at 8</h1>
       <div className="recipes-grid">
-        {recipes.map(recipe => (
+        {recipes.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
       </div>
@@ -126,10 +140,10 @@ export default function Home() {
 ### pages/recipes/[id].js (Recipe Detail Page)
 
 ```jsx
-import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
-import { fetchRecipeById } from '../../lib/api';
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import Layout from "../../components/Layout";
+import { fetchRecipeById } from "../../lib/api";
 
 export default function RecipeDetail() {
   const router = useRouter();
@@ -155,9 +169,24 @@ export default function RecipeDetail() {
     }
   }, [id]);
 
-  if (loading) return <Layout><div>Loading...</div></Layout>;
-  if (error) return <Layout><div>Error: {error}</div></Layout>;
-  if (!recipe) return <Layout><div>Recipe not found</div></Layout>;
+  if (loading)
+    return (
+      <Layout>
+        <div>Loading...</div>
+      </Layout>
+    );
+  if (error)
+    return (
+      <Layout>
+        <div>Error: {error}</div>
+      </Layout>
+    );
+  if (!recipe)
+    return (
+      <Layout>
+        <div>Recipe not found</div>
+      </Layout>
+    );
 
   return (
     <Layout>
@@ -167,16 +196,18 @@ export default function RecipeDetail() {
           <span>Time: {recipe.time_minutes} minutes</span>
           <span>Price: ${recipe.price}</span>
         </div>
-        
+
         <div className="recipe-tags">
-          {recipe.tags.map(tag => (
-            <span key={tag.id} className="tag">{tag.name}</span>
+          {recipe.tags.map((tag) => (
+            <span key={tag.id} className="tag">
+              {tag.name}
+            </span>
           ))}
         </div>
 
         <h2>Ingredients</h2>
         <ul className="ingredients-list">
-          {recipe.ingredients.map(ingredient => (
+          {recipe.ingredients.map((ingredient) => (
             <li key={ingredient.id}>
               {ingredient.amount} {ingredient.unit} {ingredient.name}
             </li>
@@ -185,7 +216,7 @@ export default function RecipeDetail() {
 
         <h2>Instructions</h2>
         <div className="recipe-description">
-          {recipe.description.split('\n').map((step, index) => (
+          {recipe.description.split("\n").map((step, index) => (
             <p key={index}>{step}</p>
           ))}
         </div>
@@ -206,12 +237,13 @@ export default function RecipeDetail() {
 ### lib/api.js (API Client)
 
 ```javascript
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3005/api";
 
 export async function fetchRecipes() {
   const response = await fetch(`${API_BASE_URL}/recipe/recipes/`);
   if (!response.ok) {
-    throw new Error('Failed to fetch recipes');
+    throw new Error("Failed to fetch recipes");
   }
   return response.json();
 }
@@ -219,21 +251,21 @@ export async function fetchRecipes() {
 export async function fetchRecipeById(id) {
   const response = await fetch(`${API_BASE_URL}/recipe/recipes/${id}/`);
   if (!response.ok) {
-    throw new Error('Failed to fetch recipe');
+    throw new Error("Failed to fetch recipe");
   }
   return response.json();
 }
 
 export async function createRecipe(recipeData) {
   const response = await fetch(`${API_BASE_URL}/recipe/recipes/`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(recipeData),
   });
   if (!response.ok) {
-    throw new Error('Failed to create recipe');
+    throw new Error("Failed to create recipe");
   }
   return response.json();
 }

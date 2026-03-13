@@ -1,50 +1,50 @@
 # 😋 Dinner served and ate - the ultimate cookboook 🍳🥘
-![Banner](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejA0ZXBnNHBra3ZtYTJycDA1OHh4b244MWhrdzhocjg4NWVxeTB0YSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FyKfqRxVbzciY/giphy.gif)
 
+![Banner](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejA0ZXBnNHBra3ZtYTJycDA1OHh4b244MWhrdzhocjg4NWVxeTB0YSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FyKfqRxVbzciY/giphy.gif)
 
 ---
 
-A cookbook with hot recipes for your inner diva🫦 
+A cookbook with hot recipes for your inner diva🫦
 
-The application deploys with Azure Virtual Machine and uses Docker. 
+The application deploys with Azure Virtual Machine and uses Docker.
 The application is migrated to **Next.js + React**
 
---- 
+---
 
 <div style="background-color:#ffe6f2;padding:10px;border-radius:8px; color: Black;">
 ✨ This project uses Azure VM✨
 </div>
 
 ## Deployment live 🤤🍜
-* Frontend - ipadresse coming in hot soon
-* Backend API - //-
-* API Dumentation swagger - -//-
 
---- 
+- Frontend - ipadresse coming in hot soon
+- Backend API - //-
+- API Dumentation swagger - -//-
+
+---
+
 <h2 style="color:#ff69b4;">Tech Stack 🍴</h2>
 
 <h3 style="color:#ff69b4;"> Backend 🍴</h3>
 
-* 🌟Javascript
-* 🍩Node
-* 🍬Express
-* 🪅better-SQLite3
+- 🌟Javascript
+- 🍩Node
+- 🍬Express
+- 🪅better-SQLite3
 
 <h3 style="color:#ff69b4;">Frontend🍴</h3>
 
-* ⚛️ React
-* 🍩Next
+- ⚛️ React
+- 🍩Next
 
 <h3 style="color:#ff69b4;">API Documentation🍴</h3>
 
-* 🍰Swagger
-
+- 🍰Swagger
 
 <h3 style="color:#ff69b4;"> Infrastructure 🥣 </h3>
 - ☁️ Azure 
 - 🍬Ubunto
 - 🌟Docker Compose
-
 
 <h2 style="color:#ff69b4;"> Project Structure 😋🍣🍽️ </h2>
 
@@ -56,7 +56,7 @@ DINNER-SERVED-AT-ATE/
 │   └── templates           # for issues and pull requests
 │
 ├── READMEs/                # Own notes and details
-│ 
+│
 ├── backend/                # Express backend API
 │   ├── index.js
 │   ├── db.js
@@ -72,7 +72,7 @@ DINNER-SERVED-AT-ATE/
 │   │   └──page.js
 │   ├── swagger/            # API pecification page
 │   │   ├──api-schema.yaml
-│   │   ├──page.js 
+│   │   ├──page.js
 │   │   └──SwaggerUIClient.jsx
 │   ├── page.js
 │   ├── layout.js
@@ -89,30 +89,30 @@ DINNER-SERVED-AT-ATE/
 
 <h2 style="color:#ff69b4;"> Deployment on your own VM 🍜🍜  - using our cool script :) </h2>
 - Make sure to have a ssh key on your computer ?
-- Fork repo 
+- Fork repo
 
-- Open ```Azure-VM-script.ps1```
+- Open `Azure-VM-script.ps1`
 
-- Change ```$location = "norwayeast"```
- to a location available to your azure account
-- In powershell: 
-```powershell -ExecutionPolicy Bypass -File .\Azure-VM-script.ps1```
+- Change `$location = "norwayeast"`
+  to a location available to your azure account
+- In powershell:
+  `powershell -ExecutionPolicy Bypass -File .\Azure-VM-script.ps1`
 - Log in to your Azure account
-
 
 <h2 style="color:#ff69b4;"> Running Locally with Docker 🍳 </h2>
 Preconditions:
 - Docker Desktop installed and open
 
-
 ### Acces overview - with Docker
+
 Frontend : http://localhost:4000
 
-Backend API : http://localhost:5000/api/     # see API overview for rutes
+Backend API : http://localhost:5000/api/ # see API overview for rutes
 
-API overview with Swagger : http://localhost:4000/swagger 
+API overview with Swagger : http://localhost:4000/swagger
 
 1. **Start applikation:**
+
    ```bash
    docker-compose up
    ```
@@ -122,7 +122,7 @@ API overview with Swagger : http://localhost:4000/swagger
    docker-compose down
    ```
 
---- 
+---
 
 <h2 style="color:#ff69b4;"> Run projekt locally (without Docker) 🍳 🍳 </h2>
 Requirements: Node.js 18+
@@ -130,10 +130,10 @@ Requirements: Node.js 18+
 **Note:** Docker uses port 4000, local development uses port 3005.
 
 1. Install dependencies:
-	- `npm install`
+   - `npm install`
 2. Start dev-server:
-	- `npm run dev`
-3. Open	- `http://localhost:3005/`
+   - `npm run dev`
+3. Open - `http://localhost:3005/`
 
 ---
 
@@ -161,8 +161,9 @@ Requirements: Node.js 18+
 Uses legacy SQLite database 
 `app.db`
 
-Wanna use your own database with delicios meals? 
+Wanna use your own database with delicios meals?
 Change here
+
 - `DB_PATH=/path/to/app.db`
 
 <h2 style="color:#ff69b4;"> Team: Ostemadsprincesse 🫶👨🏼‍🍳</h2>

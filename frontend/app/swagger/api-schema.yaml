@@ -9,9 +9,9 @@ paths:
       operationId: home
       description: Home page displaying all recipes with 90s styling
       tags:
-      - web
+        - web
       responses:
-        '200':
+        "200":
           description: HTML page with recipe list
           content:
             text/html:
@@ -23,16 +23,16 @@ paths:
       operationId: recipe_detail
       description: Recipe detail page with full cooking instructions (WARNING - Vulnerable to SQL injection for educational purposes)
       tags:
-      - web
+        - web
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: Recipe ID
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: Recipe ID
+          required: true
       responses:
-        '200':
+        "200":
           description: HTML page with recipe details
           content:
             text/html:
@@ -44,218 +44,218 @@ paths:
       operationId: user_create_create
       description: Create a new user in the system.
       tags:
-      - user
+        - user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: "#/components/schemas/UserRequest"
         required: true
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-          description: ''
+                $ref: "#/components/schemas/User"
+          description: ""
 
   /api/user/me/:
     get:
       operationId: user_me_retrieve
       description: Manage the authenticated user.
       tags:
-      - user
+        - user
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-          description: ''
+                $ref: "#/components/schemas/User"
+          description: ""
     put:
       operationId: user_me_update
       description: Manage the authenticated user.
       tags:
-      - user
+        - user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: "#/components/schemas/UserRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-          description: ''
+                $ref: "#/components/schemas/User"
+          description: ""
     patch:
       operationId: user_me_partial_update
       description: Manage the authenticated user.
       tags:
-      - user
+        - user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedUserRequest'
+              $ref: "#/components/schemas/PatchedUserRequest"
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-          description: ''
+                $ref: "#/components/schemas/User"
+          description: ""
 
   /api/user/token/:
     post:
       operationId: user_token_create
       description: Create a new auth token for user.
       tags:
-      - user
+        - user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthTokenRequest'
+              $ref: "#/components/schemas/AuthTokenRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthToken'
-          description: ''
+                $ref: "#/components/schemas/AuthToken"
+          description: ""
 
   /api/recipe/recipes/:
     get:
       operationId: recipe_recipes_list
       description: View for manage recipe APIs.
       parameters:
-      - in: query
-        name: ingredients
-        schema:
-          type: string
-        description: Comma separated list of ingredient IDs to filter
-      - in: query
-        name: tags
-        schema:
-          type: string
-        description: Comma separated list of tag IDs to filter
+        - in: query
+          name: ingredients
+          schema:
+            type: string
+          description: Comma separated list of ingredient IDs to filter
+        - in: query
+          name: tags
+          schema:
+            type: string
+          description: Comma separated list of tag IDs to filter
       tags:
-      - recipe
+        - recipe
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Recipe'
-          description: ''
+                  $ref: "#/components/schemas/Recipe"
+          description: ""
     post:
       operationId: recipe_recipes_create
       description: View for manage recipe APIs.
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RecipeDetailRequest'
+              $ref: "#/components/schemas/RecipeDetailRequest"
         required: true
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipeDetail'
-          description: ''
+                $ref: "#/components/schemas/RecipeDetail"
+          description: ""
 
   /api/recipe/recipes/{id}/:
     get:
       operationId: recipe_recipes_retrieve
       description: View for manage recipe APIs.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this recipe.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this recipe.
+          required: true
       tags:
-      - recipe
+        - recipe
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipeDetail'
-          description: ''
+                $ref: "#/components/schemas/RecipeDetail"
+          description: ""
     put:
       operationId: recipe_recipes_update
       description: View for manage recipe APIs.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this recipe.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this recipe.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RecipeDetailRequest'
+              $ref: "#/components/schemas/RecipeDetailRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipeDetail'
-          description: ''
+                $ref: "#/components/schemas/RecipeDetail"
+          description: ""
     patch:
       operationId: recipe_recipes_partial_update
       description: View for manage recipe APIs.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this recipe.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this recipe.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedRecipeDetailRequest'
+              $ref: "#/components/schemas/PatchedRecipeDetailRequest"
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipeDetail'
-          description: ''
+                $ref: "#/components/schemas/RecipeDetail"
+          description: ""
     delete:
       operationId: recipe_recipes_destroy
       description: View for manage recipe APIs.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this recipe.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this recipe.
+          required: true
       tags:
-      - recipe
+        - recipe
       responses:
-        '204':
+        "204":
           description: No response body
 
   /api/recipe/recipes/{id}/upload-image/:
@@ -263,117 +263,117 @@ paths:
       operationId: recipe_recipes_upload_image_create
       description: Upload an image to recipe.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this recipe.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this recipe.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RecipeImageRequest'
+              $ref: "#/components/schemas/RecipeImageRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipeImage'
-          description: ''
+                $ref: "#/components/schemas/RecipeImage"
+          description: ""
 
   /api/recipe/ingredients/:
     get:
       operationId: recipe_ingredients_list
       description: Manage ingredients in the database.
       parameters:
-      - in: query
-        name: assigned_only
-        schema:
-          type: integer
-          enum:
-          - 0
-          - 1
-        description: Filter by items assigned to recipes.
+        - in: query
+          name: assigned_only
+          schema:
+            type: integer
+            enum:
+              - 0
+              - 1
+          description: Filter by items assigned to recipes.
       tags:
-      - recipe
+        - recipe
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ingredient'
-          description: ''
+                  $ref: "#/components/schemas/Ingredient"
+          description: ""
 
   /api/recipe/ingredients/{id}/:
     put:
       operationId: recipe_ingredients_update
       description: Manage ingredients in the database.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this ingredient.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this ingredient.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IngredientRequest'
+              $ref: "#/components/schemas/IngredientRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ingredient'
-          description: ''
+                $ref: "#/components/schemas/Ingredient"
+          description: ""
     patch:
       operationId: recipe_ingredients_partial_update
       description: Manage ingredients in the database.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this ingredient.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this ingredient.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedIngredientRequest'
+              $ref: "#/components/schemas/PatchedIngredientRequest"
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ingredient'
-          description: ''
+                $ref: "#/components/schemas/Ingredient"
+          description: ""
     delete:
       operationId: recipe_ingredients_destroy
       description: Manage ingredients in the database.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this ingredient.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this ingredient.
+          required: true
       tags:
-      - recipe
+        - recipe
       responses:
-        '204':
+        "204":
           description: No response body
 
   /api/recipe/tags/:
@@ -381,90 +381,90 @@ paths:
       operationId: recipe_tags_list
       description: Manage tags in the database.
       parameters:
-      - in: query
-        name: assigned_only
-        schema:
-          type: integer
-          enum:
-          - 0
-          - 1
-        description: Filter by items assigned to recipes.
+        - in: query
+          name: assigned_only
+          schema:
+            type: integer
+            enum:
+              - 0
+              - 1
+          description: Filter by items assigned to recipes.
       tags:
-      - recipe
+        - recipe
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
-          description: ''
+                  $ref: "#/components/schemas/Tag"
+          description: ""
 
   /api/recipe/tags/{id}/:
     put:
       operationId: recipe_tags_update
       description: Manage tags in the database.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this tag.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this tag.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TagRequest'
+              $ref: "#/components/schemas/TagRequest"
         required: true
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
-          description: ''
+                $ref: "#/components/schemas/Tag"
+          description: ""
     patch:
       operationId: recipe_tags_partial_update
       description: Manage tags in the database.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this tag.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this tag.
+          required: true
       tags:
-      - recipe
+        - recipe
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedTagRequest'
+              $ref: "#/components/schemas/PatchedTagRequest"
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
-          description: ''
+                $ref: "#/components/schemas/Tag"
+          description: ""
     delete:
       operationId: recipe_tags_destroy
       description: Manage tags in the database.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this tag.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this tag.
+          required: true
       tags:
-      - recipe
+        - recipe
       responses:
-        '204':
+        "204":
           description: No response body
 
 components:
@@ -479,8 +479,8 @@ components:
         password:
           type: string
       required:
-      - email
-      - password
+        - email
+        - password
 
     AuthTokenRequest:
       type: object
@@ -494,8 +494,8 @@ components:
           type: string
           minLength: 1
       required:
-      - email
-      - password
+        - email
+        - password
 
     Ingredient:
       type: object
@@ -514,8 +514,8 @@ components:
           type: string
           description: Unit of measurement (e.g., "g", "tbsp", "pieces")
       required:
-      - id
-      - name
+        - id
+        - name
 
     IngredientRequest:
       type: object
@@ -530,7 +530,7 @@ components:
         unit:
           type: string
       required:
-      - name
+        - name
 
     PatchedIngredientRequest:
       type: object
@@ -567,11 +567,11 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/TagRequest'
+            $ref: "#/components/schemas/TagRequest"
         ingredients:
           type: array
           items:
-            $ref: '#/components/schemas/IngredientRequest'
+            $ref: "#/components/schemas/IngredientRequest"
         description:
           type: string
           description: Step-by-step cooking instructions
@@ -628,16 +628,16 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/Tag'
+            $ref: "#/components/schemas/Tag"
         ingredients:
           type: array
           items:
-            $ref: '#/components/schemas/Ingredient'
+            $ref: "#/components/schemas/Ingredient"
       required:
-      - id
-      - price
-      - time_minutes
-      - title
+        - id
+        - price
+        - time_minutes
+        - title
 
     RecipeDetail:
       type: object
@@ -663,19 +663,19 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/Tag'
+            $ref: "#/components/schemas/Tag"
         ingredients:
           type: array
           items:
-            $ref: '#/components/schemas/Ingredient'
+            $ref: "#/components/schemas/Ingredient"
         description:
           type: string
           description: Step-by-step cooking instructions for the recipe
       required:
-      - id
-      - price
-      - time_minutes
-      - title
+        - id
+        - price
+        - time_minutes
+        - title
 
     RecipeDetailRequest:
       type: object
@@ -699,18 +699,18 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/TagRequest'
+            $ref: "#/components/schemas/TagRequest"
         ingredients:
           type: array
           items:
-            $ref: '#/components/schemas/IngredientRequest'
+            $ref: "#/components/schemas/IngredientRequest"
         description:
           type: string
           description: Step-by-step cooking instructions
       required:
-      - price
-      - time_minutes
-      - title
+        - price
+        - time_minutes
+        - title
 
     RecipeImage:
       type: object
@@ -724,8 +724,8 @@ components:
           format: uri
           nullable: true
       required:
-      - id
-      - image
+        - id
+        - image
 
     RecipeImageRequest:
       type: object
@@ -736,7 +736,7 @@ components:
           format: binary
           nullable: true
       required:
-      - image
+        - image
 
     Tag:
       type: object
@@ -749,8 +749,8 @@ components:
           type: string
           maxLength: 255
       required:
-      - id
-      - name
+        - id
+        - name
 
     TagRequest:
       type: object
@@ -761,7 +761,7 @@ components:
           minLength: 1
           maxLength: 255
       required:
-      - name
+        - name
 
     User:
       type: object
@@ -775,8 +775,8 @@ components:
           type: string
           maxLength: 255
       required:
-      - email
-      - name
+        - email
+        - name
 
     UserRequest:
       type: object
@@ -797,6 +797,6 @@ components:
           minLength: 1
           maxLength: 255
       required:
-      - email
-      - name
-      - password
+        - email
+        - name
+        - password

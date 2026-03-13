@@ -2,7 +2,7 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ "main", "ssh_fix" ]
+    branches: ["main", "ssh_fix"]
 
 jobs:
   build-frontend:
@@ -47,7 +47,7 @@ jobs:
           docker build -t ghcr.io/ostemadprinsesse/dinner-served-backend:latest -f ./backend/Dockerfile ./backend
           docker push ghcr.io/ostemadprinsesse/dinner-served-backend:latest
 
-# claus kode 
+  # claus kode
   deploy:
     needs: [build-frontend, build-backend]
     runs-on: ubuntu-latest
