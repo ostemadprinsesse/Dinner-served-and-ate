@@ -14,3 +14,4 @@ Vi vil bruge ESlint bibliotektet til det, fordi det er til react <3
 
 Hvis man heri vælger on: push så vil Github Actions også holde med kvaliteten. Vi vælger at vores linting.yml ikke skal rette koden, men kun tjekke den, da en retning her ikke blive være del af git historikken. 
 I linting.yml vil man også kunne tilføje tests (feks unit test), og det kunne være nice. 
+
