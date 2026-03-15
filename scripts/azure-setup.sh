@@ -30,10 +30,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Configuration variables - CUSTOMIZE THESE
-RESOURCE_GROUP="recipe-cookbook-rg"
+RESOURCE_GROUP="dinner-served-and-ate-rg"
 LOCATION="norwayeast"  # Change to your preferred region (e.g., "eastus", "northeurope")
-VM_NAME="recipe-cookbook-vm"
-VM_SIZE="Standard_B1s"  # Change to "Standard_B2s" for better performance
+VM_NAME="dinner-served-and-ate-vm"
+VM_SIZE="Standard_B2ats_v2"  # Change to "Standard_B2s" for better performance
 ADMIN_USERNAME="azureuser"
 SSH_KEY_PATH="$HOME/.ssh/DINNERKEY/id_rsa.pub"   # Change this path to point at your public key - (your private key should be in the same folder, and should be set in SSH_PRIVATE_KEY on GitHub)
 
