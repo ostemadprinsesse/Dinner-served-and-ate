@@ -4,9 +4,9 @@
 
 $ErrorActionPreference = "Stop"
 
-$resourceGroupName = "donationsplatform-rg"
+$resourceGroupName = "dinner-served-and-ate-rg"
 $location = "norwayeast"
-$vmName = "donationsplatform-vm"
+$vmName = "dinner-served-and-ate-vm"
 $adminUsername = "azureuser"
 $sshPublicKeyPath = "$HOME\.ssh\id_rsa.pub"
 $sshPrivateKeyPath = $sshPublicKeyPath -replace "\.pub$", ""
