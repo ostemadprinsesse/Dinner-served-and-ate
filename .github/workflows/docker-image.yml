@@ -71,19 +71,22 @@ jobs:
         run: |
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
-            -o ProxyJump="$SSH_USER@$SSH_HOST_NGINX" \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
             src/docker-compose.backend.yml "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/docker-compose.backend.yml"
 
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
-            -o ProxyJump="$SSH_USER@$SSH_HOST_NGINX" \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
             .env "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/.env"
 
       - name: Deploy backend on private VM
         run: |
           ssh -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
-            -o ProxyJump="$SSH_USER@$SSH_HOST_NGINX" \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
             "$SSH_USER@$BACKEND_PRIVATE_IP" << EOF
             set -euo pipefail
             cd ~/app
@@ -125,14 +128,16 @@ jobs:
         run: |
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
             src/docker-compose.nginx.yml "$SSH_USER@$SSH_HOST_NGINX:~/app/docker-compose.nginx.yml"
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
             .env "$SSH_USER@$SSH_HOST_NGINX:~/app/.env"
 
       - name: Deploy nginx and frontend on public VM
         run: |
-          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST_NGINX" << EOF
+          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST_NGINX" << EOF
             set -euo pipefail
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
