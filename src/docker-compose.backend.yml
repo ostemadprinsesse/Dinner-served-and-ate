@@ -1,0 +1,16 @@
+services:
+  backend:
+    image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-backend:latest
+    pull_policy: always
+    container_name: dinner-served-backend
+    restart: unless-stopped
+    environment:
+      - DB_PATH=/app/data/app.db
+    ports:
+      - "5000:5000"
+    volumes:
+      - sqlite-data:/app/data
+
+volumes:
+  sqlite-data:
+    name: dinner-served-sqlite

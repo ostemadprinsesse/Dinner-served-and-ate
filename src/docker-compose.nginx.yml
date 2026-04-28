@@ -1,0 +1,20 @@
+services:
+  frontend:
+    image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-frontend:latest
+    pull_policy: always
+    container_name: dinner-served-frontend
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://localhost/api
+
+  nginx:
+    image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-nginx:latest
+    pull_policy: always
+    container_name: dinner-served-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_PRIVATE_IP=${BACKEND_PRIVATE_IP}
+    depends_on:
+      - frontend
