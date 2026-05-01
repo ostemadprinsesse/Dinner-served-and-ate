@@ -2,7 +2,7 @@ name: Build and Deploy (Two VMs)
 
 on:
   push:
-    branches: ["main", "nginx-and-backend"]
+    branches: ["main", "nginx-and-backend-34522bd"]
 
 jobs:
   build-images:
