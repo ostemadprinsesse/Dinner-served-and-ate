@@ -204,6 +204,12 @@ az_cli network nsg rule delete \
   --name "allow-backend-from-vnet" \
   --output none 2>/dev/null || true
 
+az_cli network nsg rule delete \
+  --resource-group "$RESOURCE_GROUP" \
+  --nsg-name "$BACKEND_NSG_NAME" \
+  --name "allow-backend-ssh-from-nginx" \
+  --output none 2>/dev/null || true
+
 az_cli network nsg rule create \
   --resource-group "$RESOURCE_GROUP" \
   --nsg-name "$BACKEND_NSG_NAME" \
@@ -219,6 +225,23 @@ az_cli network nsg rule update \
   --name "allow-backend-from-nginx" \
   --source-address-prefixes "$NGINX_PRIVATE_IP" \
   --destination-port-ranges "$BACKEND_PORT" \
+  --output none
+
+az_cli network nsg rule create \
+  --resource-group "$RESOURCE_GROUP" \
+  --nsg-name "$BACKEND_NSG_NAME" \
+  --name "allow-backend-ssh-from-nginx" \
+  --priority 1090 \
+  --source-address-prefixes "$NGINX_PRIVATE_IP" \
+  --destination-port-ranges 22 \
+  --access Allow --protocol Tcp --direction Inbound \
+  --output none 2>/dev/null || \
+az_cli network nsg rule update \
+  --resource-group "$RESOURCE_GROUP" \
+  --nsg-name "$BACKEND_NSG_NAME" \
+  --name "allow-backend-ssh-from-nginx" \
+  --source-address-prefixes "$NGINX_PRIVATE_IP" \
+  --destination-port-ranges 22 \
   --output none
 
 # ---------- IP lookup ----------
