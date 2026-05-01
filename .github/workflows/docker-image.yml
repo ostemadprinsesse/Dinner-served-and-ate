@@ -33,9 +33,10 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Build and push backend/frontend/nginx
+        working-directory: ./src
         run: |
           GITHUB_OWNER="${{ steps.vars.outputs.github_owner }}" \
-          docker buildx bake -f src/docker-compose.prod.yml \
+          docker buildx bake -f docker-compose.prod.yml \
             --set *.platform=linux/amd64 \
             --push
 
