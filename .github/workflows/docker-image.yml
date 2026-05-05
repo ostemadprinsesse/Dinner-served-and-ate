@@ -1,87 +1,146 @@
-name: Build and Push Docker Images
+name: Build and Deploy (Two VMs)
 
 on:
   push:
-    branches: [ "main", "ssh_fix" ]
+    branches: ["main"]
 
 jobs:
-  build-frontend:
+  build-images:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      github_owner: ${{ steps.vars.outputs.github_owner }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set lowercase owner
+        id: vars
+        run: |
+          echo "github_owner=$(echo \"${{ github.repository_owner }}\" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_GITHUB_USERNAME }}
+          password: ${{ secrets.CR_PAT }}
 
-      - name: Build and push Frontend
+      - name: Build and push backend/frontend/nginx
         run: |
-          docker build -t ghcr.io/ostemadprinsesse/dinner-served-frontend:latest -f ./frontend/Dockerfile ./frontend
-          docker push ghcr.io/ostemadprinsesse/dinner-served-frontend:latest
+          GITHUB_OWNER="${{ steps.vars.outputs.github_owner }}" \
+          docker buildx bake -f src/docker-compose.prod.yml \
+            --set *.platform=linux/amd64 \
+            --push
 
-  build-backend:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Backend
-        run: |
-          docker build -t ghcr.io/ostemadprinsesse/dinner-served-backend:latest -f ./backend/Dockerfile ./backend
-          docker push ghcr.io/ostemadprinsesse/dinner-served-backend:latest
-
-# claus kode 
-  deploy:
-    needs: [build-frontend, build-backend]
+  deploy-backend:
+    needs: build-images
     runs-on: ubuntu-latest
     env:
       SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_HOST: ${{ secrets.SSH_HOST }} #iå-adressen på azure machine skal også gemmes i github secrets - og den skal så laves om når det er en anden en den originale
+      SSH_HOST_NGINX: ${{ secrets.SSH_HOST_NGINX }}
+      BACKEND_PRIVATE_IP: ${{ secrets.BACKEND_PRIVATE_IP }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      DOCKER_GITHUB_USERNAME: ${{ secrets.DOCKER_GITHUB_USERNAME }}
+      GITHUB_OWNER: ${{ needs.build-images.outputs.github_owner }}
 
     steps:
-      - name: Add SSH key to runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add SSH key
         run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
           chmod 600 ~/.ssh/ssh_key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create .env file
+      - name: Create backend .env
         run: |
-          echo "GREETING=Hello from Github Action" >> .env
+          cat > .env <<EOF
+          GITHUB_OWNER=${GITHUB_OWNER}
+          EOF
 
-      - name: Transfer .env file to server
+      - name: Upload backend compose and env via bastion
         run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST:.env
+          scp -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
+            src/docker-compose.backend.yml "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/docker-compose.backend.yml"
 
-      - name: Check Out Repository
-        uses: actions/checkout@v6
+          scp -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
+            .env "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/.env"
 
-      - name: Transfer Docker compose file to server
+      - name: Deploy backend on private VM
         run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.prod.yml $SSH_USER@$SSH_HOST:docker-compose.yml
+          ssh -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
+            "$SSH_USER@$BACKEND_PRIVATE_IP" << EOF
+            set -euo pipefail
+            cd ~/app
+            echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
+            docker compose --env-file .env -f docker-compose.backend.yml pull
+            docker compose --env-file .env -f docker-compose.backend.yml up -d
+          EOF
 
-      - name: Deploy to server
+  deploy-nginx:
+    needs: [build-images, deploy-backend]
+    runs-on: ubuntu-latest
+    env:
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_HOST_NGINX: ${{ secrets.SSH_HOST_NGINX }}
+      BACKEND_PRIVATE_IP: ${{ secrets.BACKEND_PRIVATE_IP }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      DOCKER_GITHUB_USERNAME: ${{ secrets.DOCKER_GITHUB_USERNAME }}
+      GITHUB_OWNER: ${{ needs.build-images.outputs.github_owner }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add SSH key
         run: |
-          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << "EOF"
-            sudo docker compose pull
-            sudo docker compose up -d
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
+          chmod 600 ~/.ssh/ssh_key
+
+      - name: Create nginx .env
+        run: |
+          cat > .env <<EOF
+          GITHUB_OWNER=${GITHUB_OWNER}
+          BACKEND_PRIVATE_IP=${BACKEND_PRIVATE_IP}
+          EOF
+
+      - name: Upload nginx compose and env
+        run: |
+          scp -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            src/docker-compose.nginx.yml "$SSH_USER@$SSH_HOST_NGINX:~/app/docker-compose.nginx.yml"
+          scp -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            .env "$SSH_USER@$SSH_HOST_NGINX:~/app/.env"
+
+      - name: Deploy nginx and frontend on public VM
+        run: |
+          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST_NGINX" << EOF
+            set -euo pipefail
+            cd ~/app
+            echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
+            docker compose --env-file .env -f docker-compose.nginx.yml pull
+            docker compose --env-file .env -f docker-compose.nginx.yml up -d
           EOF

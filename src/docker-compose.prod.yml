@@ -1,0 +1,18 @@
+services:
+  backend:
+    image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+  frontend:
+    image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+  nginx:
+    image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-nginx:latest
+    build:
+      context: ./network
+      dockerfile: Dockerfile

@@ -2,6 +2,9 @@
 ![Banner](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejA0ZXBnNHBra3ZtYTJycDA1OHh4b244MWhrdzhocjg4NWVxeTB0YSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FyKfqRxVbzciY/giphy.gif)
 
 
+
+
+
 ---
 
 A cookbook with hot recipes for your inner diva🫦 
@@ -15,16 +18,19 @@ The application is migrated to **Next.js + React**
 ✨ This project uses Azure VM og nginx✨
 </div>
 
-## Deployment locally via nginx and docker
-In VS code terminal: (remember to opn docker desktop)
-docker compose -f docker-compose.deploy.yml up --build
+## Deployment (two VMs via GitHub Actions)
+Use the infra script to provision VMs, then push to `main` to trigger CI/CD.
 
-Vil der starte følgende cotainere
-- frontend
-- backend
-- nginx
+1. Provision Azure VMs
+  ```bash
+  bash infrastructure/setup_azure_vms.sh
+  ```
+2. Push to `main` to deploy
 
-Og man kan **se frontend gennem nginx på: localhost:80**, mens man (for now?) stadig kan se "direkte på frontend" fra frontend containeren på localhost:3005 som normalt
+The pipeline uses these compose files:
+- `src/docker-compose.backend.yml`
+- `src/docker-compose.nginx.yml`
+- `src/docker-compose.prod.yml` (buildx bake config)
 
 
 ## Deployment live 🤤🍜
@@ -64,52 +70,34 @@ Og man kan **se frontend gennem nginx på: localhost:80**, mens man (for now?) s
 DINNER-SERVED-AT-ATE/
 │
 ├── .github/
-│   ├── workflows/
-│   └── templates           # for issues and pull requests
+│   └── workflows/
 │
-├── READMEs/                # Own notes and details
-│ 
-├── backend/                # Express backend API
-│   ├── index.js
-│   ├── db.js
-│   ├── app.db
-│   ├── package.json
-│   ├── package-lock.json
-│   └── Dockerfile
+├── infrastructure/         # Azure provisioning scripts
+│   ├── setup_azure_vms.sh
+│   └── teardown_azure_vms.sh
 │
-├── frontend/               # React frontend
-│   ├── api/
-│   │   └──route.js
-│   ├── recipes/
-│   │   └──page.js
-│   ├── swagger/            # API pecification page
-│   │   ├──api-schema.yaml
-│   │   ├──page.js 
-│   │   └──SwaggerUIClient.jsx
-│   ├── page.js
-│   ├── layout.js
-│   ├── package.json
-│   ├── global.css
-│   └── Dockerfile
+├── READMEs/                # Notes and details
 │
-├── docker-compose.yml     # Docker orchestration
-├── Azure-VM-script.ps1    # Script for VM etc
+├── src/
+│   ├── backend/             # Express backend API
+│   ├── frontend/            # Next.js frontend
+│   ├── network/             # Nginx config + Dockerfile
+│   ├── docker-compose.backend.yml
+│   ├── docker-compose.nginx.yml
+│   └── docker-compose.prod.yml
+│
 └── README.md
 ```
 
 ---
 
-<h2 style="color:#ff69b4;"> Deployment on your own VM 🍜🍜  - using our cool script :) </h2>
-- Make sure to have a ssh key on your computer ?
-- Fork repo 
-
-- Open ```Azure-VM-script.ps1```
-
-- Change ```$location = "norwayeast"```
- to a location available to your azure account
-- In powershell: 
-```powershell -ExecutionPolicy Bypass -File .\Azure-VM-script.ps1```
-- Log in to your Azure account
+<h2 style="color:#ff69b4;"> Deployment on your own VM 🍜🍜 </h2>
+- Make sure you have an SSH key on your computer
+- Fork the repo
+- Run the provisioning script:
+```bash
+bash infrastructure/setup_azure_vms.sh
+```
 
 
 <h2 style="color:#ff69b4;"> Running Locally with Docker 🍳 </h2>
@@ -117,22 +105,12 @@ Preconditions:
 - Docker Desktop installed and open
 
 
-### Acces overview - with Docker
-Frontend : http://localhost:4000
+### Access overview - local dev
+Frontend: http://localhost:3005
 
-Backend API : http://localhost:5000/api/     # see API overview for rutes
+Backend API: http://localhost:5000/api/  # see API overview for routes
 
-API overview with Swagger : http://localhost:4000/swagger 
-
-1. **Start applikation:**
-   ```bash
-   docker-compose up
-   ```
-
-2. **Stop applikation:**
-   ```bash
-   docker-compose down
-   ```
+Swagger UI: http://localhost:3005/swagger
 
 --- 
 
@@ -142,17 +120,19 @@ Requirements: Node.js 18+
 **Note:** Docker uses port 4000, local development uses port 3005.
 
 1. Install dependencies:
-	- `npm install`
-2. Start dev-server:
-	- `npm run dev`
-3. Open	- `http://localhost:3005/`
+  - `cd src/frontend && npm install`
+  - `cd ../backend && npm install`
+2. Start dev servers:
+  - `cd src/backend && npm run dev`
+  - `cd src/frontend && npm run dev`
+3. Open: `http://localhost:3005/`
 
 ---
 
 <h2 style="color:#ff69b4;"> API dokumentation 🍜 </h2>
 
-- OpenAPI spec: [api-schema.yaml](api-schema.yaml)
-- API overview (Markdown): [API_OVERVIEW.md](API_OVERVIEW.md)
+- OpenAPI spec: [src/frontend/app/swagger/api-schema.yaml](src/frontend/app/swagger/api-schema.yaml)
+- API overview (Markdown): [READMEs/API_OVERVIEW.md](READMEs/API_OVERVIEW.md)
 - Checkout the swagger documentation page
 
 <h2 style="color:#ff69b4;"> Funktionality 🍝</h2>
