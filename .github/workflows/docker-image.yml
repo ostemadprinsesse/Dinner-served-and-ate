@@ -2,7 +2,7 @@ name: Build and Deploy (Two VMs)
 
 on:
   push:
-    branches: ["main", "fix-pipelines"]
+    branches: ["main", "fix-pipelines"]cd 
 
 jobs:
   build-images:
