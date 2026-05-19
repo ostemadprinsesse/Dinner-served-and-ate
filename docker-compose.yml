@@ -1,0 +1,78 @@
+services:
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: dinner-served-backend
+    restart: unless-stopped
+    environment:
+      - DB_PATH=/app/data/app.db
+    ports:
+      - "5000:5000"
+    volumes:
+      - sqlite-data:/app/data
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: dinner-served-frontend
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://nginx
+    ports:
+      - "3005:3005"
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: ./src/network
+      dockerfile: Dockerfile
+    container_name: dinner-served-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_PRIVATE_IP=backend
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dinner-served-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dinner-served-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
+
+volumes:
+  sqlite-data:
+    name: dinner-served-sqlite
+
+networks:
+  app-network:
+    driver: bridge

@@ -3,6 +3,7 @@ import cors from 'cors';
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import promClient from 'prom-client';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,9 +11,26 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 5000;
 
+promClient.collectDefaultMetrics();
+
+const httpRequestCounter = new promClient.Counter({
+  name: 'http_requests_total',
+  help: 'Total HTTP requests',
+  labelNames: ['route', 'status'],
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    const route = req.route ? `${req.baseUrl}${req.route.path}` : 'unmatched';
+    httpRequestCounter.labels(route, String(res.statusCode)).inc();
+  });
+
+  next();
+});
 
 // Database setup
 const dbPath = process.env.DB_PATH || path.join(__dirname, 'data', 'app.db');
@@ -112,6 +130,11 @@ app.get('/api/recipe/recipes/:id', (req, res) => {
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'Backend is running' });
+});
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', promClient.register.contentType);
+  res.end(await promClient.register.metrics());
 });
 
 // Start server

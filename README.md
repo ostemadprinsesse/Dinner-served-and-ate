@@ -104,13 +104,24 @@ bash infrastructure/setup_azure_vms.sh
 Preconditions:
 - Docker Desktop installed and open
 
+Start the full stack (app + monitoring) from the repo root:
+```bash
+docker compose up --build
+```
+
 
 ### Access overview - local dev
 Frontend: http://localhost:3005
 
 Backend API: http://localhost:5000/api/  # see API overview for routes
 
+Backend metrics: http://localhost:5000/metrics
+
 Swagger UI: http://localhost:3005/swagger
+
+Prometheus UI: http://localhost:9090
+
+Grafana UI: http://localhost:3000
 
 --- 
 
