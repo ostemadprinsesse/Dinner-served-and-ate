@@ -32,6 +32,36 @@ The pipeline uses these compose files:
 - `src/docker-compose.nginx.yml`
 - `src/docker-compose.prod.yml` (buildx bake config)
 
+## Monitoring and feedback with Prometheus + Grafana
+
+Monitoring shows what the system is doing over time with metrics such as uptime, request rate, response time, and memory usage. Logging explains individual events and errors. Both matter: logs help debug what happened, while monitoring makes behavior visible early enough for the team to react.
+
+This project exposes Prometheus metrics from the backend at:
+
+- `http://localhost:5000/metrics`
+
+The local monitoring stack lives in `monitoring/` and starts the backend, Prometheus, and Grafana together:
+
+- `monitoring/prometheus.yml` scrapes the backend `/metrics` endpoint every 15 seconds.
+- `monitoring/docker-compose.yml` starts the backend, Prometheus, and Grafana.
+- `monitoring/grafana/dashboards/dinner-served-backend.json` is the exported Grafana dashboard.
+
+Run it locally:
+
+```bash
+cd monitoring
+docker compose up --build -d
+```
+
+Access:
+
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000` with login `admin` / `admin`
+
+Grafana is automatically connected to Prometheus at `http://prometheus:9090` and loads the "Dinner Served Backend" dashboard. The dashboard makes the second DevOps principle, Feedback, concrete by showing backend availability, request rate, p95 request duration, memory usage, and the number of recipes in the cookbook.
+
+For Azure multi-VM monitoring, use `monitoring/prometheus.azure.example.yml` as the starting point. Replace the example private IP addresses with the nginx and backend VM private IPs, run Prometheus/Grafana on the nginx VM, and only open scrape ports such as `9100`, `9113`, and the backend metrics port to the nginx VM private IP.
+
 
 ## Deployment live 🤤🍜
 * Frontend - ipadresse coming in hot soon
@@ -76,6 +106,11 @@ DINNER-SERVED-AT-ATE/
 │   ├── setup_azure_vms.sh
 │   └── teardown_azure_vms.sh
 │
+├── monitoring/             # Prometheus + Grafana local monitoring stack
+│   ├── docker-compose.yml
+│   ├── prometheus.yml
+│   └── grafana/
+│
 ├── READMEs/                # Notes and details
 │
 ├── src/
@@ -104,24 +139,13 @@ bash infrastructure/setup_azure_vms.sh
 Preconditions:
 - Docker Desktop installed and open
 
-Start the full stack (app + monitoring) from the repo root:
-```bash
-docker compose up --build
-```
-
 
 ### Access overview - local dev
 Frontend: http://localhost:3005
 
 Backend API: http://localhost:5000/api/  # see API overview for routes
 
-Backend metrics: http://localhost:5000/metrics
-
 Swagger UI: http://localhost:3005/swagger
-
-Prometheus UI: http://localhost:9090
-
-Grafana UI: http://localhost:3000
 
 --- 
 

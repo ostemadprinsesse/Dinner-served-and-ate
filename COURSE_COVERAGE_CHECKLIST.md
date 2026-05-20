@@ -277,13 +277,13 @@ After class / exercises:
 
 ## 23._monitor_logging — Monitoring & logging (Prometheus + Grafana)
 
-- [ ] Distinguish monitoring vs logging
-- [ ] Set up Prometheus scraping
-- [ ] Visualize metrics in Grafana dashboards
-- [ ] Apply DevOps principle of feedback (make system behavior visible)
+- [x] Distinguish monitoring vs logging
+- [x] Set up Prometheus scraping
+- [x] Visualize metrics in Grafana dashboards
+- [x] Apply DevOps principle of feedback (make system behavior visible)
 - [ ] Apply setup to own project, including multi-VM Azure scenario
-- [ ] Exercise: pick meaningful metrics per layer and implement at least one
-- [ ] Export Grafana dashboard JSON and commit it
+- [x] Exercise: pick meaningful metrics per layer and implement at least one
+- [x] Export Grafana dashboard JSON and commit it
 - [ ] (Optional) Add alert thresholds
 
 ---
