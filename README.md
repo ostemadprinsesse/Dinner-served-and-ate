@@ -3,10 +3,6 @@
 
 [![Build and Deploy](https://github.com/ostemadprinsesse/Dinner-served-and-ate/actions/workflows/docker-image.yml/badge.svg)](https://github.com/ostemadprinsesse/Dinner-served-and-ate/actions/workflows/docker-image.yml)
 
-
-
-
-
 ---
 
 A cookbook with hot recipes for your inner diva🫦 
@@ -40,32 +36,6 @@ Monitoring shows what the system is doing over time with metrics such as uptime,
 The backend exposes Prometheus metrics at `/metrics`. Grafana is pre-configured with a "Dinner Served Backend" dashboard showing request rate, p95 latency, memory usage, and recipe count.
 
 ---
-
-### Option A — Run monitoring locally
-
-**Prerequisites:** Docker Desktop running
-
-```bash
-# 1. Go to the monitoring folder
-cd monitoring
-
-# 2. Build and start backend + Prometheus + Grafana
-docker compose up --build -d
-
-# 3. Open in browser:
-#    Prometheus: http://localhost:9090
-#    Grafana:    http://localhost:3000  (login: admin / admin)
-
-# 4. In Prometheus, go to Status → Targets
-#    "dinner-served-backend" should show as UP
-
-# 5. To stop:
-docker compose down
-```
-
----
-
-### Option B — Deploy monitoring to the Azure VM
 
 **Prerequisites:** Azure VMs provisioned (`bash infrastructure/setup_azure_vms.sh`), Azure CLI logged in, backend app deployed to the VM (push to `main` first).
 
@@ -108,14 +78,6 @@ Docker Compose replaces containers one by one with the new image, resulting in a
 - Brief downtime on each deploy (~5–10 seconds)
 - If the new image fails to start, Docker Compose does not automatically roll back
 
-## Definition of Done
-
-A task is considered done when:
-- [ ] Code is reviewed and approved via pull request (at least 1 approval)
-- [ ] CI pipeline passes (lint + tests green)
-- [ ] Feature works in the deployed environment (not just locally)
-- [ ] Relevant documentation is updated (README, API spec if needed)
-
 --- 
 <h2 style="color:#ff69b4;">Tech Stack 🍴</h2>
 
@@ -154,7 +116,7 @@ DINNER-SERVED-AT-ATE/
 │   ├── setup_azure_vms.sh
 │   └── teardown_azure_vms.sh
 │
-├── monitoring/             # Prometheus + Grafana local monitoring stack
+├── monitoring/             # Prometheus + Grafana stack
 │   ├── docker-compose.yml
 │   ├── prometheus.yml
 │   └── grafana/
@@ -174,49 +136,13 @@ DINNER-SERVED-AT-ATE/
 
 ---
 
-<h2 style="color:#ff69b4;"> Already written op higher? Deployment on your own VM 🍜🍜 </h2>
+<h2 style="color:#ff69b4;"> Deployment on your own VM 🍜🍜 </h2>
+
 - Make sure you have an SSH key on your computer
 - Fork the repo
 - Run the provisioning script:
 
 `infrastructure/setup_azure_vms.sh`
-
-
-<h2 style="color:#ff69b4;"> not used:  Running Locally with Docker 🍳 </h2>
-Preconditions:
-- Docker Desktop installed and running
-
-```bash
-# From the repo root
-docker compose up --build -d
-```
-
-### not used - Access overview - local dev
-Frontend: http://localhost:3005
-
-Backend API: http://localhost:5000/api/  # see API overview for routes
-
-Swagger UI: http://localhost:3005/swagger
-
-```bash
-# Stop everything
-docker compose down
-```
-
---- 
-
-<h2 style="color:#ff69b4;"> NOT USED: Run projekt locally (without Docker) 🍳 🍳 </h2>
-Requirements: Node.js 18+
-
-**Note:** Docker uses port 4000, local development uses port 3005.
-
-1. Install dependencies:
-  - `cd src/frontend && npm install`
-  - `cd ../backend && npm install`
-2. Start dev servers:
-  - `cd src/backend && npm run dev`
-  - `cd src/frontend && npm run dev`
-3. Open: `http://localhost:3005/`
 
 ---
 
@@ -225,20 +151,6 @@ Requirements: Node.js 18+
 - OpenAPI spec: [src/frontend/app/swagger/api-schema.yaml](src/frontend/app/swagger/api-schema.yaml)
 - API overview (Markdown): [READMEs/API_OVERVIEW.md](READMEs/API_OVERVIEW.md)
 - Checkout the swagger documentation page
-
-<h2 style="color:#ff69b4;"> Funktionality 🍝</h2>
-
-- UI:
-  - `/` viser alle opskrifter
-  - `/recipes/[id]/` viser opskrifts-detaljer
-- API (Next.js route handlers):
-  - (Implementeret samlet i én fil: `app/api/[[...path]]/route.js`)
-  - `/api/recipe/recipes/`
-  - `/api/recipe/recipes/{id}/`
-  - `/api/recipe/recipes/{id}/upload-image/` (stub)
-  - `/api/recipe/ingredients/` + `/api/recipe/ingredients/{id}/` (id endpoints er stubs)
-  - `/api/recipe/tags/` + `/api/recipe/tags/{id}/` (id endpoints er stubs)
-  - `/api/user/*` (simple demo endpoints)
 
 <h2 style="color:#ff69b4;"> Database 🍴 </h2>
 Uses legacy SQLite database 
