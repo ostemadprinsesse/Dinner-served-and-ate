@@ -136,6 +136,57 @@ export function createApp(db) {
     }
   });
 
+  app.get('/api/swagger-schema', (req, res) => {
+    res.json({
+      openapi: '3.0.0',
+      info: { title: 'Dinner Served API', version: '1.0.0' },
+      paths: {
+        '/api/recipe/recipes': {
+          get: {
+            summary: 'Get all recipes',
+            responses: {
+              200: { description: 'List of recipes with tags' },
+            },
+          },
+        },
+        '/api/recipe/recipes/{id}': {
+          get: {
+            summary: 'Get a recipe by ID',
+            parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+            responses: {
+              200: { description: 'Recipe with tags and ingredients' },
+              404: { description: 'Recipe not found' },
+            },
+          },
+        },
+        '/api/recipe/ingredients': {
+          get: {
+            summary: 'Get all ingredients',
+            responses: {
+              200: { description: 'List of ingredients' },
+            },
+          },
+        },
+        '/api/recipe/tags': {
+          get: {
+            summary: 'Get all tags',
+            responses: {
+              200: { description: 'List of tags' },
+            },
+          },
+        },
+        '/health': {
+          get: {
+            summary: 'Health check',
+            responses: {
+              200: { description: 'Backend status' },
+            },
+          },
+        },
+      },
+    });
+  });
+
   app.get('/health', (req, res) => {
     res.json({ status: 'Backend is running' });
   });
