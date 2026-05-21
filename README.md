@@ -38,31 +38,56 @@ The pipeline uses these compose files:
 
 Monitoring shows what the system is doing over time with metrics such as uptime, request rate, response time, and memory usage. Logging explains individual events and errors. Both matter: logs help debug what happened, while monitoring makes behavior visible early enough for the team to react.
 
-This project exposes Prometheus metrics from the backend at:
+The backend exposes Prometheus metrics at `/metrics`. Grafana is pre-configured with a "Dinner Served Backend" dashboard showing request rate, p95 latency, memory usage, and recipe count.
 
-- `http://localhost:5000/metrics`
+---
 
-The local monitoring stack lives in `monitoring/` and starts the backend, Prometheus, and Grafana together:
+### Option A — Run monitoring locally
 
-- `monitoring/prometheus.yml` scrapes the backend `/metrics` endpoint every 15 seconds.
-- `monitoring/docker-compose.yml` starts the backend, Prometheus, and Grafana.
-- `monitoring/grafana/dashboards/dinner-served-backend.json` is the exported Grafana dashboard.
-
-Run it locally:
+**Prerequisites:** Docker Desktop running
 
 ```bash
+# 1. Go to the monitoring folder
 cd monitoring
+
+# 2. Build and start backend + Prometheus + Grafana
 docker compose up --build -d
+
+# 3. Open in browser:
+#    Prometheus: http://localhost:9090
+#    Grafana:    http://localhost:3000  (login: admin / admin)
+
+# 4. In Prometheus, go to Status → Targets
+#    "dinner-served-backend" should show as UP
+
+# 5. To stop:
+docker compose down
 ```
 
-Access:
+---
 
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3000` with login `admin` / `admin`
+### Option B — Deploy monitoring to the Azure VM
 
-Grafana is automatically connected to Prometheus at `http://prometheus:9090` and loads the "Dinner Served Backend" dashboard. The dashboard makes the second DevOps principle, Feedback, concrete by showing backend availability, request rate, p95 request duration, memory usage, and the number of recipes in the cookbook.
+**Prerequisites:** Azure VMs provisioned (`bash infrastructure/setup_azure_vms.sh`), Azure CLI logged in, backend app deployed to the VM (push to `main` first).
 
-For Azure multi-VM monitoring, use `monitoring/prometheus.azure.example.yml` as the starting point. Replace the example private IP addresses with the nginx and backend VM private IPs, run Prometheus/Grafana on the nginx VM, and only open scrape ports such as `9100`, `9113`, and the backend metrics port to the nginx VM private IP.
+```bash
+# 1. From the repo root — open port 9090 on the nginx VM (one-time)
+az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 9090 --priority 1004
+
+# 2. Deploy Prometheus + Grafana to the nginx VM
+#    Replace the IPs with your actual values (printed by the setup script)
+SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
+  bash infrastructure/deploy-monitoring-manual.sh
+
+# 3. Open in browser:
+#    Prometheus: http://<nginx-public-ip>:9090
+#    Grafana:    http://<nginx-public-ip>:3000  (login: admin / admin)
+
+# 4. In Prometheus, go to Status → Targets
+#    "azure-backend" should show as UP once the backend is deployed
+
+# NOTE: the backend only starts scraping after the app is deployed via CI/CD (merge to main).
+```
 
 
 ## Deployment live 🤤🍜
