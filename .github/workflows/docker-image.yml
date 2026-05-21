@@ -129,6 +129,7 @@ jobs:
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
             docker compose --env-file .env -f docker-compose.backend.yml pull
+            docker compose --env-file .env -f docker-compose.backend.yml down --remove-orphans || true
             docker compose --env-file .env -f docker-compose.backend.yml up -d
           EOF
 
@@ -179,6 +180,7 @@ jobs:
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
             docker compose --env-file .env -f docker-compose.nginx.yml pull
+            docker compose --env-file .env -f docker-compose.nginx.yml down --remove-orphans || true
             docker compose --env-file .env -f docker-compose.nginx.yml up -d
           EOF
 
@@ -224,5 +226,6 @@ jobs:
             set -euo pipefail
             cd ~/monitoring
             docker compose -f docker-compose.azure.yml pull
+            docker compose -f docker-compose.azure.yml down --remove-orphans || true
             docker compose -f docker-compose.azure.yml up -d
           EOF
