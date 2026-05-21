@@ -50,6 +50,11 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       DOCKER_GITHUB_USERNAME: ${{ secrets.DOCKER_GITHUB_USERNAME }}
       GITHUB_OWNER: ${{ needs.build-images.outputs.github_owner }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - name: Checkout
@@ -65,6 +70,11 @@ jobs:
         run: |
           cat > .env <<EOF
           GITHUB_OWNER=${GITHUB_OWNER}
+          DB_HOST=${DB_HOST}
+          DB_PORT=${DB_PORT}
+          DB_NAME=${DB_NAME}
+          DB_USER=${DB_USER}
+          DB_PASSWORD=${DB_PASSWORD}
           EOF
 
       - name: Upload backend compose and env via bastion

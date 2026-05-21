@@ -26,6 +26,23 @@ Use the infra script to provision VMs, then push to `main` to trigger CI/CD.
 
 2. Push to `main` to deploy
 
+### Optional: Dedicated PostgreSQL VM
+If you want a separate database VM, run this first (same VNet/subnet, no public IP):
+
+`infrastructure/setup_azure_db_vm.sh`
+
+It will:
+- Create a private DB VM in the same VNet/subnet
+- Install PostgreSQL and create database/user
+- Allow only backend subnet traffic to port 5432
+
+Optional GitHub secrets (set by the script if you run it with `SET_DB_SECRETS=1`):
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
 The pipeline uses these compose files:
 - `src/docker-compose.backend.yml`
 - `src/docker-compose.nginx.yml`
@@ -73,6 +90,7 @@ DINNER-SERVED-AT-ATE/
 │
 ├── infrastructure/         # Azure provisioning scripts
 │   ├── setup_azure_vms.sh
+│   ├── setup_azure_db_vm.sh
 │   └── teardown_azure_vms.sh
 │
 ├── READMEs/                # Notes and details
