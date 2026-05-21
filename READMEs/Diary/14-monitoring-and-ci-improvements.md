@@ -12,21 +12,13 @@ The backend exposes metrics at `/metrics` using the `prom-client` library. We tr
 - `dinner_served_recipes_total` — number of recipes in the database
 - Default Node.js metrics (memory, CPU, uptime)
 
-**Local monitoring** runs via `monitoring/docker-compose.yml`:
-```bash
-cd monitoring
-docker compose up --build -d
-# Prometheus: http://localhost:9090
-# Grafana:    http://localhost:3000  (admin / admin)
-```
-
-**Azure monitoring** runs on the nginx VM via `monitoring/docker-compose.azure.yml`.
-Prometheus is configured from `monitoring/prometheus.azure.template.yml` — the `${BACKEND_PRIVATE_IP}` placeholder is substituted at deploy time using `envsubst`.
+Monitoring runs on the nginx VM via `monitoring/docker-compose.azure.yml`. Prometheus is configured from `monitoring/prometheus.azure.template.yml` — the `${BACKEND_PRIVATE_IP}` placeholder is substituted at deploy time using `envsubst`.
 
 To deploy monitoring to the Azure VM manually:
 ```bash
-# Open port 9090 once (for Prometheus access)
+# Open ports once (Prometheus + Grafana)
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 9090 --priority 1004
+az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 3000 --priority 1005
 
 # Deploy
 SSH_HOST_NGINX=<ip> BACKEND_PRIVATE_IP=<ip> bash infrastructure/deploy-monitoring-manual.sh
@@ -36,14 +28,21 @@ Grafana auto-provisions the datasource (Prometheus) and the "Dinner Served Backe
 
 ---
 
+### Swagger endpoint
+
+Added `/api/swagger-schema` endpoint to the backend so the frontend can fetch the OpenAPI schema directly from the running backend rather than bundling it statically.
+
+---
+
 ### CI/CD improvements
 
 We improved the GitHub Actions workflow (`.github/workflows/docker-image.yml`):
 
-- **Added a `lint-and-test` job** that runs on every push to every branch and on every PR to main. It lints and tests the backend, and lints the frontend.
+- **Added a `lint-and-test` job** that runs on every push and on every PR to main. It lints and tests the backend, and lints the frontend.
 - **Added `pull_request` trigger** so PRs get CI checks before merging.
-- **Deploy jobs now gate on branch** — only deploy on pushes to `main` or `grafana` (not every branch).
+- **Deploy jobs gate on branch** — only deploy on pushes to `main` or `grafana`.
 - **Added `deploy-monitoring` job** that deploys Prometheus + Grafana to the nginx VM after every deploy.
+- **Fixed container conflict crash** — added `docker compose down --remove-orphans || true` before every `docker compose up -d` in all three deploy steps (backend, nginx, monitoring). Without this, re-deploys failed with "container name already in use" when old containers were left over from a previous run.
 
 ---
 
@@ -61,6 +60,18 @@ Previously the diary described creating a `DINNERKEY/` folder in `.ssh` and copy
 
 ---
 
+### Codebase cleanup
+
+Removed files that were only used for running the project locally with Docker — none of these are referenced by CI or the VM deploy scripts:
+
+- `docker-compose.yml` (root) — local all-in-one stack
+- `monitoring/docker-compose.yml` — local monitoring stack (Option A)
+- `monitoring/prometheus.yml` — local Prometheus config pointing to Docker service name `backend:5000`
+
+The README was also cleaned up to remove all local Docker and non-Docker run instructions, keeping only VM deployment steps.
+
+---
+
 ### Frontend lint
 
 Added `"lint": "next lint"` script and ESLint dependencies to `src/frontend/package.json`.
@@ -73,7 +84,7 @@ Fixed a lint error in `app/layout.js`: replaced `<a href="/">` with Next.js `<Li
 
 We use a **rolling restart** strategy:
 1. GitHub Actions builds new Docker images and pushes to GHCR
-2. SSH into VMs and run `docker compose pull` + `docker compose up -d`
+2. SSH into VMs and run `docker compose down` + `docker compose pull` + `docker compose up -d`
 
 This causes ~5–10 seconds of downtime per deploy. Acceptable for a course project.
 
