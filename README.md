@@ -1,6 +1,8 @@
 # 😋 Dinner served and ate - the ultimate cookboook 🍳🥘
 ![Banner](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejA0ZXBnNHBra3ZtYTJycDA1OHh4b244MWhrdzhocjg4NWVxeTB0YSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FyKfqRxVbzciY/giphy.gif)
 
+[![Build and Deploy](https://github.com/ostemadprinsesse/Dinner-served-and-ate/actions/workflows/docker-image.yml/badge.svg)](https://github.com/ostemadprinsesse/Dinner-served-and-ate/actions/workflows/docker-image.yml)
+
 
 
 
@@ -64,9 +66,31 @@ For Azure multi-VM monitoring, use `monitoring/prometheus.azure.example.yml` as 
 
 
 ## Deployment live 🤤🍜
-* Frontend - ipadresse coming in hot soon
-* Backend API - //-
-* API Dumentation swagger - -//-
+* Frontend - *URL to be added after next deploy*
+* Backend API - *URL to be added after next deploy*
+* API Documentation (Swagger) - *URL to be added after next deploy*
+* Grafana monitoring - *URL to be added after next deploy* (port 3000)
+
+## Deployment Strategy
+
+We use a **rolling restart** strategy. On every push to `main`, GitHub Actions:
+1. Builds new Docker images and pushes them to GHCR
+2. SSHs into the Azure VMs and runs `docker compose pull` + `docker compose up -d`
+
+Docker Compose replaces containers one by one with the new image, resulting in a brief window of downtime (a few seconds). This is acceptable for a course project. A true zero-downtime approach would require blue-green or a load balancer with health checks.
+
+**Tradeoffs:**
+- Simple to operate — no extra infrastructure needed
+- Brief downtime on each deploy (~5–10 seconds)
+- If the new image fails to start, Docker Compose does not automatically roll back
+
+## Definition of Done
+
+A task is considered done when:
+- [ ] Code is reviewed and approved via pull request (at least 1 approval)
+- [ ] CI pipeline passes (lint + tests green)
+- [ ] Feature works in the deployed environment (not just locally)
+- [ ] Relevant documentation is updated (README, API spec if needed)
 
 --- 
 <h2 style="color:#ff69b4;">Tech Stack 🍴</h2>

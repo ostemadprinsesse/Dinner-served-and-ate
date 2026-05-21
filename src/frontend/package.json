@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
-    "start": "next start -p 3005"
+    "start": "next start -p 3005",
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "^14.0.0",
@@ -12,5 +13,9 @@
     "react-dom": "^18.0.0",
     "swagger-ui-react": "^5.0.0",
     "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0"
   }
 }
