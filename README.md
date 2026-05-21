@@ -21,10 +21,9 @@ The application is migrated to **Next.js + React**
 ## Deployment (two VMs via GitHub Actions)
 Use the infra script to provision VMs, then push to `main` to trigger CI/CD.
 
-1. Provision Azure VMs
-  ```bash
-  bash infrastructure/setup_azure_vms.sh
-  ```
+1. To start deployment with Azure VMs
+  `infrastructure/setup_azure_vms.sh`
+
 2. Push to `main` to deploy
 
 The pipeline uses these compose files:
@@ -91,21 +90,20 @@ DINNER-SERVED-AT-ATE/
 
 ---
 
-<h2 style="color:#ff69b4;"> Deployment on your own VM 🍜🍜 </h2>
+<h2 style="color:#ff69b4;"> Already written op higher? Deployment on your own VM 🍜🍜 </h2>
 - Make sure you have an SSH key on your computer
 - Fork the repo
 - Run the provisioning script:
-```bash
-bash infrastructure/setup_azure_vms.sh
-```
+
+`infrastructure/setup_azure_vms.sh`
 
 
-<h2 style="color:#ff69b4;"> Running Locally with Docker 🍳 </h2>
+<h2 style="color:#ff69b4;"> not used:  Running Locally with Docker 🍳 </h2>
 Preconditions:
 - Docker Desktop installed and open
 
 
-### Access overview - local dev
+### not used - Access overview - local dev
 Frontend: http://localhost:3005
 
 Backend API: http://localhost:5000/api/  # see API overview for routes
@@ -114,7 +112,7 @@ Swagger UI: http://localhost:3005/swagger
 
 --- 
 
-<h2 style="color:#ff69b4;"> Run projekt locally (without Docker) 🍳 🍳 </h2>
+<h2 style="color:#ff69b4;"> NOT USED: Run projekt locally (without Docker) 🍳 🍳 </h2>
 Requirements: Node.js 18+
 
 **Note:** Docker uses port 4000, local development uses port 3005.
