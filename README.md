@@ -186,8 +186,12 @@ bash infrastructure/setup_azure_vms.sh
 
 <h2 style="color:#ff69b4;"> Running Locally with Docker 🍳 </h2>
 Preconditions:
-- Docker Desktop installed and open
+- Docker Desktop installed and running
 
+```bash
+# From the repo root
+docker compose up --build -d
+```
 
 ### Access overview - local dev
 Frontend: http://localhost:3005
@@ -195,6 +199,11 @@ Frontend: http://localhost:3005
 Backend API: http://localhost:5000/api/  # see API overview for routes
 
 Swagger UI: http://localhost:3005/swagger
+
+```bash
+# Stop everything
+docker compose down
+```
 
 --- 
 
