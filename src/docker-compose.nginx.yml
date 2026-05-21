@@ -5,7 +5,7 @@ services:
     container_name: dinner-served-frontend
     restart: unless-stopped
     environment:
-      - NEXT_PUBLIC_BASE_URL=http://localhost/api
+      - NEXT_PUBLIC_BASE_URL=http://nginx
 
   nginx:
     image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-nginx:latest
