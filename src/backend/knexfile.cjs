@@ -13,9 +13,11 @@ module.exports = {
     ssl: sslEnabled ? { rejectUnauthorized: false } : false
   },
   migrations: {
-    directory: path.join(__dirname, 'migrations')
+    directory: path.join(__dirname, 'migrations'),
+    loadExtensions: ['.cjs']
   },
   seeds: {
-    directory: path.join(__dirname, 'seeds')
+    directory: path.join(__dirname, 'seeds'),
+    loadExtensions: ['.cjs']
   }
 };
