@@ -41,7 +41,7 @@ jobs:
 
   build-images:
     needs: lint-and-test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/grafana')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -197,7 +197,7 @@ jobs:
   deploy-monitoring:
     needs: [build-images, deploy-backend]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/grafana')
+    if: github.event_name == 'push'
     env:
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_HOST_NGINX: ${{ secrets.SSH_HOST_NGINX }}
