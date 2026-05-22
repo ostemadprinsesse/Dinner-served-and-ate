@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
 import { newDb } from 'pg-mem';
-import knex from 'knex';
 import { createApp } from '../app.js';
 
 const SCHEMA = `
@@ -40,12 +39,7 @@ let emptyApp;
 
 beforeAll(async () => {
   const seededDb = newDb();
-  const { Pool: SeededPool } = seededDb.adapters.createPg();
-  const seededKnex = knex({
-    client: 'pg',
-    connection: new SeededPool(),
-    pool: { min: 0, max: 1 }
-  });
+  const seededKnex = seededDb.adapters.createKnex();
 
   await seededKnex.raw(SCHEMA);
   await seededKnex.raw(`
@@ -59,12 +53,7 @@ beforeAll(async () => {
   app = createApp(seededKnex);
 
   const emptyDb = newDb();
-  const { Pool: EmptyPool } = emptyDb.adapters.createPg();
-  const emptyKnex = knex({
-    client: 'pg',
-    connection: new EmptyPool(),
-    pool: { min: 0, max: 1 }
-  });
+  const emptyKnex = emptyDb.adapters.createKnex();
 
   await emptyKnex.raw(SCHEMA);
   emptyApp = createApp(emptyKnex);
