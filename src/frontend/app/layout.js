@@ -1,4 +1,5 @@
 import './globals.css';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Awesome Recipe Cookbook',
@@ -15,7 +16,7 @@ export default function RootLayout({ children }) {
               <h1 className="title">🍳 Dinner served at ate 🍳</h1>
             </div>
             <nav className="nav">
-              <a className="navLink" href="/">🏠 HOME</a>
+              <Link className="navLink" href="/">🏠 HOME</Link>
             </nav>
           </header>
 

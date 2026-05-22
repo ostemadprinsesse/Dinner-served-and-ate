@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "azure-node-exporters"
+    static_configs:
+      - targets:
+          - "10.0.0.4:9100" # nginx VM private IP
+          - "10.0.0.5:9100" # backend VM private IP
+
+  - job_name: "azure-nginx"
+    static_configs:
+      - targets:
+          - "10.0.0.4:9113" # nginx-prometheus-exporter on nginx VM
+
+  - job_name: "azure-backend"
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "10.0.0.5:5000" # backend app private IP and metrics port

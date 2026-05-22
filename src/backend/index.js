@@ -13,4 +13,5 @@ app.listen(PORT, () => {
 process.on('SIGTERM', async () => {
   await db.destroy();
   process.exit(0);
+  console.log(`Metrics: http://localhost:${PORT}/metrics`);
 });

@@ -22,7 +22,7 @@ SUBNET_CIDR="10.0.1.0/24"
 
 NGINX_VM="${NGINX_VM:-dinner-served-nginx}"
 BACKEND_VM="${BACKEND_VM:-dinner-served-backend}"
-VM_SIZE="${VM_SIZE:-Standard_B1s}"
+VM_SIZE="${VM_SIZE:-Standard_B2s_v2}"
 VM_IMAGE="Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest"
 ADMIN_USER="${ADMIN_USER:-azureuser}"
 
@@ -176,9 +176,10 @@ create_vm "$NGINX_VM"
 create_vm "$BACKEND_VM" "no-public-ip"
 
 # ---------- NSG rules ----------
-log "Opening ports 80 and 443 on '$NGINX_VM'..."
-az_cli vm open-port --resource-group "$RESOURCE_GROUP" --name "$NGINX_VM" --port 80  --priority 1001 --output none || true
-az_cli vm open-port --resource-group "$RESOURCE_GROUP" --name "$NGINX_VM" --port 443 --priority 1002 --output none || true
+log "Opening ports 80, 443, and 3000 (Grafana) on '$NGINX_VM'..."
+az_cli vm open-port --resource-group "$RESOURCE_GROUP" --name "$NGINX_VM" --port 80   --priority 1001 --output none || true
+az_cli vm open-port --resource-group "$RESOURCE_GROUP" --name "$NGINX_VM" --port 443  --priority 1002 --output none || true
+az_cli vm open-port --resource-group "$RESOURCE_GROUP" --name "$NGINX_VM" --port 3000 --priority 1003 --output none || true
 
 NGINX_PRIVATE_IP=$(az_cli vm show -d -g "$RESOURCE_GROUP" -n "$NGINX_VM" --query privateIps -o tsv)
 [[ -n "$NGINX_PRIVATE_IP" ]] || die "Could not resolve nginx private IP"

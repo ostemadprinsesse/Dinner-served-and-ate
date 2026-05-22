@@ -20,6 +20,14 @@ Two in-memory SQLite databases are created before all tests:
 
 ---
 
+## GET /metrics
+
+| Test | Expected |
+|------|----------|
+| Exposes Prometheus metrics | 200, response contains backend request and Node.js metrics |
+
+---
+
 ## GET /api/recipe/recipes
 
 | Test | Expected |

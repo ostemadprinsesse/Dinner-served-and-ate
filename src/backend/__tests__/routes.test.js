@@ -62,6 +62,15 @@ describe('GET /health', () => {
   });
 });
 
+describe('GET /metrics', () => {
+  it('exposes Prometheus metrics', async () => {
+    const res = await request(app).get('/metrics');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('dinner_served_http_requests_total');
+    expect(res.text).toContain('dinner_served_nodejs');
+  });
+});
+
 describe('GET /api/recipe/recipes', () => {
   it('returns 200 with an array of recipes', async () => {
     const res = await request(app).get('/api/recipe/recipes');

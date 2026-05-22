@@ -1,28 +1,32 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import yaml from 'js-yaml';
-
 import SwaggerUIClient from './SwaggerUIClient';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 
 export const metadata = {
   title: 'Swagger UI',
 };
 
-export default function SwaggerPage() {
-  const schemaPath = path.join(__dirname, 'api-schema.yaml');
-  const schemaYaml = fs.readFileSync(schemaPath, 'utf8');
-  const spec = yaml.load(schemaYaml);
+async function getSwaggerSpec() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3005'}/api/swagger-schema`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch swagger schema');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error loading swagger spec:', error);
+    return {};
+  }
+}
+
+export default async function SwaggerPage() {
+  const spec = await getSwaggerSpec();
 
   return (
     <main>
       <h1>Swagger UI</h1>
       <p>
-        OpenAPI spec loaded from <code>api-schema.yaml</code>
+        OpenAPI spec loaded from backend API
       </p>
       <SwaggerUIClient spec={spec} />
     </main>
