@@ -143,6 +143,19 @@ jobs:
             docker compose --env-file .env -f docker-compose.backend.yml up -d
           EOF
 
+      - name: Run database migrations
+        run: |
+          ssh -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
+            "$SSH_USER@$BACKEND_PRIVATE_IP" << 'EOF'
+            set -euo pipefail
+            for i in 1 2 3 4 5; do
+              docker exec dinner-served-backend npm run migrate:latest && break || sleep 5
+            done
+          EOF
+
   deploy-nginx:
     needs: [build-images, deploy-backend]
     runs-on: ubuntu-latest

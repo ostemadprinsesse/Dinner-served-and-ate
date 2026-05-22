@@ -255,7 +255,7 @@ sudo -E apt-get install -y "postgresql-${POSTGRES_VERSION}" "postgresql-client-$
 PG_CONF="/etc/postgresql/${POSTGRES_VERSION}/main/postgresql.conf"
 PG_HBA="/etc/postgresql/${POSTGRES_VERSION}/main/pg_hba.conf"
 
-sudo sed -i "s/^#\?listen_addresses.*/listen_addresses = '*'/'" "$PG_CONF"
+sudo sed -i "s/^#\?listen_addresses.*/listen_addresses = '*'/" "$PG_CONF"
 
 if ! sudo grep -q "${ALLOW_SOURCE_SUBNET}" "$PG_HBA"; then
   echo "host all all ${ALLOW_SOURCE_SUBNET} scram-sha-256" | sudo tee -a "$PG_HBA" > /dev/null
@@ -265,11 +265,9 @@ sudo systemctl restart postgresql
 
 ROLE_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='${DB_USER}'" | tr -d ' ')
 if [[ "$ROLE_EXISTS" != "1" ]]; then
-  sudo -u postgres psql -v user="$DB_USER" -v pass="$DB_PASSWORD" \
-    -c "CREATE ROLE :\"user\" LOGIN PASSWORD :'pass';"
+  sudo -u postgres psql -c "CREATE ROLE \"${DB_USER}\" LOGIN PASSWORD '${DB_PASSWORD}'"
 else
-  sudo -u postgres psql -v user="$DB_USER" -v pass="$DB_PASSWORD" \
-    -c "ALTER ROLE :\"user\" WITH LOGIN PASSWORD :'pass';"
+  sudo -u postgres psql -c "ALTER ROLE \"${DB_USER}\" WITH LOGIN PASSWORD '${DB_PASSWORD}'"
 fi
 
 DB_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'" | tr -d ' ')
