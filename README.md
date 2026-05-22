@@ -139,7 +139,7 @@ The pipeline uses these compose files:
 
 * 🌟 Javascript / Node.js
 * 🍬 Express
-* 🪅 better-SQLite3
+* 🧰 Knex + PostgreSQL
 
 <h3 style="color:#ff69b4;">Frontend 🍴</h3>
 
@@ -199,9 +199,9 @@ DINNER-SERVED-AND-ATE/
 
 <h2 style="color:#ff69b4;">Database 🍴</h2>
 
-Uses SQLite (`app.db`). To use your own database, set:
+Uses PostgreSQL via the dedicated DB VM. Configure with:
 ```
-DB_PATH=/path/to/app.db
+DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 ```
 
 ---

@@ -32,9 +32,9 @@ export function createApp(db) {
     registers: [register],
   });
 
-  const updateRecipeMetrics = () => {
-    const recipeCount = db.prepare('SELECT COUNT(*) AS count FROM recipes').get().count;
-    recipesTotalGauge.set(recipeCount);
+  const updateRecipeMetrics = async () => {
+    const result = await db('recipes').count('id as count').first();
+    recipesTotalGauge.set(Number(result?.count ?? 0));
   };
 
   app.use(cors());
@@ -180,7 +180,7 @@ export function createApp(db) {
   });
 
   app.get('/metrics', async (req, res) => {
-    updateRecipeMetrics();
+    await updateRecipeMetrics();
     res.set('Content-Type', register.contentType);
     res.end(await register.metrics());
   });
