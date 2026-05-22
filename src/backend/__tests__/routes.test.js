@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
-import Database from 'better-sqlite3';
+import { newDb } from 'pg-mem';
+import knex from 'knex';
 import { createApp } from '../app.js';
 
 const SCHEMA = `
@@ -37,9 +38,17 @@ const SCHEMA = `
 let app;
 let emptyApp;
 
-beforeAll(() => {
-  const db = new Database(':memory:');
-  db.exec(SCHEMA + `
+beforeAll(async () => {
+  const seededDb = newDb();
+  const { Pool: SeededPool } = seededDb.adapters.createPg();
+  const seededKnex = knex({
+    client: 'pg',
+    connection: new SeededPool(),
+    pool: { min: 0, max: 1 }
+  });
+
+  await seededKnex.raw(SCHEMA);
+  await seededKnex.raw(`
     INSERT INTO recipes VALUES (1, 'Pasta', 'Simple pasta', 20, 50, 'http://example.com');
     INSERT INTO recipes VALUES (2, 'Plain', 'No tags or ingredients', 5, 10, null);
     INSERT INTO tags VALUES (1, 'Italian');
@@ -47,11 +56,18 @@ beforeAll(() => {
     INSERT INTO ingredients VALUES (1, 'Noodles', 'g', 'Carbs');
     INSERT INTO recipe_ingredients VALUES (1, 1, 200, 'g');
   `);
-  app = createApp(db);
+  app = createApp(seededKnex);
 
-  const emptyDb = new Database(':memory:');
-  emptyDb.exec(SCHEMA);
-  emptyApp = createApp(emptyDb);
+  const emptyDb = newDb();
+  const { Pool: EmptyPool } = emptyDb.adapters.createPg();
+  const emptyKnex = knex({
+    client: 'pg',
+    connection: new EmptyPool(),
+    pool: { min: 0, max: 1 }
+  });
+
+  await emptyKnex.raw(SCHEMA);
+  emptyApp = createApp(emptyKnex);
 });
 
 describe('GET /health', () => {
