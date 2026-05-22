@@ -2,17 +2,17 @@ services:
   backend:
     image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-backend:latest
     build:
-      context: ./src/backend
+      context: ./backend
       dockerfile: Dockerfile
 
   frontend:
     image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-frontend:latest
     build:
-      context: ./src/frontend
+      context: ./frontend
       dockerfile: Dockerfile
 
   nginx:
     image: ghcr.io/${GITHUB_OWNER}/dinner-served-and-ate-nginx:latest
     build:
-      context: ./src/network
+      context: ./network
       dockerfile: Dockerfile

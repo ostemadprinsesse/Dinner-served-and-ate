@@ -2,10 +2,46 @@ name: Build and Deploy (Two VMs)
 
 on:
   push:
-    branches: ["main", "fix-pipelines"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: src/backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: src/backend
+        run: npm ci
+
+      - name: Lint backend
+        working-directory: src/backend
+        run: npm run lint
+
+      - name: Test backend
+        working-directory: src/backend
+        run: npm test
+
+      - name: Install frontend dependencies
+        working-directory: src/frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: src/frontend
+        run: npm run lint
+
   build-images:
+    needs: lint-and-test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/grafana')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,9 +69,10 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Build and push backend/frontend/nginx
+        working-directory: src
         run: |
           GITHUB_OWNER="${{ steps.vars.outputs.github_owner }}" \
-          docker buildx bake -f src/docker-compose.prod.yml \
+          docker buildx bake -f docker-compose.prod.yml \
             --set *.platform=linux/amd64 \
             --push
 
@@ -92,6 +129,7 @@ jobs:
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
             docker compose --env-file .env -f docker-compose.backend.yml pull
+            docker compose --env-file .env -f docker-compose.backend.yml down --remove-orphans || true
             docker compose --env-file .env -f docker-compose.backend.yml up -d
           EOF
 
@@ -142,5 +180,52 @@ jobs:
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
             docker compose --env-file .env -f docker-compose.nginx.yml pull
+            docker compose --env-file .env -f docker-compose.nginx.yml down --remove-orphans || true
             docker compose --env-file .env -f docker-compose.nginx.yml up -d
+          EOF
+
+  deploy-monitoring:
+    needs: [build-images, deploy-backend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/grafana')
+    env:
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_HOST_NGINX: ${{ secrets.SSH_HOST_NGINX }}
+      BACKEND_PRIVATE_IP: ${{ secrets.BACKEND_PRIVATE_IP }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
+          chmod 600 ~/.ssh/ssh_key
+
+      - name: Generate prometheus config from template
+        run: |
+          envsubst < monitoring/prometheus.azure.template.yml > monitoring/prometheus.azure.yml
+
+      - name: Upload monitoring files to nginx VM
+        run: |
+          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            "$SSH_USER@$SSH_HOST_NGINX" 'mkdir -p ~/monitoring'
+          tar -czf - \
+            monitoring/prometheus.azure.yml \
+            monitoring/docker-compose.azure.yml \
+            monitoring/grafana \
+            | ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+              "$SSH_USER@$SSH_HOST_NGINX" 'tar -xzf - --strip-components=1 -C ~/monitoring'
+
+      - name: Start monitoring stack on nginx VM
+        run: |
+          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            "$SSH_USER@$SSH_HOST_NGINX" << 'EOF'
+            set -euo pipefail
+            cd ~/monitoring
+            docker compose -f docker-compose.azure.yml pull
+            docker compose -f docker-compose.azure.yml down --remove-orphans || true
+            docker compose -f docker-compose.azure.yml up -d
           EOF
