@@ -6,22 +6,20 @@ export function createApp(db) {
   app.use(cors());
   app.use(express.json());
 
-  app.get('/api/recipe/recipes', (req, res) => {
+  app.get('/api/recipe/recipes', async (req, res) => {
     try {
-      const recipes = db.prepare(`
-        SELECT id, title, description, time_minutes, price, link
-        FROM recipes
-      `).all();
+      const recipes = await db('recipes')
+        .select('id', 'title', 'description', 'time_minutes', 'price', 'link');
 
-      const recipesWithTags = recipes.map(recipe => {
-        const tags = db.prepare(`
-          SELECT t.id, t.name
-          FROM tags t
-          JOIN recipe_tags rt ON t.id = rt.tag_id
-          WHERE rt.recipe_id = ?
-        `).all(recipe.id);
-        return { ...recipe, tags };
-      });
+      const recipesWithTags = await Promise.all(
+        recipes.map(async recipe => {
+          const tags = await db('tags as t')
+            .join('recipe_tags as rt', 't.id', 'rt.tag_id')
+            .where('rt.recipe_id', recipe.id)
+            .select('t.id', 't.name');
+          return { ...recipe, tags };
+        })
+      );
 
       res.json(recipesWithTags);
     } catch (error) {
@@ -29,54 +27,45 @@ export function createApp(db) {
     }
   });
 
-  app.get('/api/recipe/ingredients', (req, res) => {
+  app.get('/api/recipe/ingredients', async (req, res) => {
     try {
-      const ingredients = db.prepare(`
-        SELECT id, name, unit, category
-        FROM ingredients
-      `).all();
+      const ingredients = await db('ingredients')
+        .select('id', 'name', 'unit', 'category');
       res.json(ingredients);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.get('/api/recipe/tags', (req, res) => {
+  app.get('/api/recipe/tags', async (req, res) => {
     try {
-      const tags = db.prepare(`
-        SELECT id, name
-        FROM tags
-      `).all();
+      const tags = await db('tags').select('id', 'name');
       res.json(tags);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.get('/api/recipe/recipes/:id', (req, res) => {
+  app.get('/api/recipe/recipes/:id', async (req, res) => {
     try {
-      const recipe = db.prepare(`
-        SELECT id, title, description, time_minutes, price, link
-        FROM recipes WHERE id = ?
-      `).get(req.params.id);
+      const recipe = await db('recipes')
+        .select('id', 'title', 'description', 'time_minutes', 'price', 'link')
+        .where('id', req.params.id)
+        .first();
 
       if (!recipe) {
         return res.status(404).json({ error: 'Recipe not found' });
       }
 
-      const tags = db.prepare(`
-        SELECT t.id, t.name
-        FROM tags t
-        JOIN recipe_tags rt ON t.id = rt.tag_id
-        WHERE rt.recipe_id = ?
-      `).all(recipe.id);
+      const tags = await db('tags as t')
+        .join('recipe_tags as rt', 't.id', 'rt.tag_id')
+        .where('rt.recipe_id', recipe.id)
+        .select('t.id', 't.name');
 
-      const ingredients = db.prepare(`
-        SELECT i.id, i.name, ri.amount, ri.unit
-        FROM ingredients i
-        JOIN recipe_ingredients ri ON i.id = ri.ingredient_id
-        WHERE ri.recipe_id = ?
-      `).all(recipe.id);
+      const ingredients = await db('ingredients as i')
+        .join('recipe_ingredients as ri', 'i.id', 'ri.ingredient_id')
+        .where('ri.recipe_id', recipe.id)
+        .select('i.id', 'i.name', 'ri.amount', 'ri.unit');
 
       res.json({ ...recipe, tags, ingredients });
     } catch (error) {

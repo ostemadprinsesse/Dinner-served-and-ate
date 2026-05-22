@@ -20,6 +20,11 @@ This runbook provisions a dedicated PostgreSQL VM and configures network access 
 4. Verify connectivity from the backend VM (run on backend host):
    - `psql "host=<DB_PRIVATE_IP> port=5432 dbname=dinner_db user=dinner_user"`
 
+5. Run migrations + seeds (from a machine that can reach the DB):
+   - `cd src/backend`
+   - `DB_HOST=<DB_PRIVATE_IP> DB_PORT=5432 DB_NAME=dinner_db DB_USER=dinner_user DB_PASSWORD=<password> npm run migrate:latest`
+   - `DB_HOST=<DB_PRIVATE_IP> DB_PORT=5432 DB_NAME=dinner_db DB_USER=dinner_user DB_PASSWORD=<password> npm run seed:run`
+
 ## Useful env vars
 - `RESOURCE_GROUP` (default: rg-dinner-served-and-ate)
 - `LOCATION` (default: swedencentral)

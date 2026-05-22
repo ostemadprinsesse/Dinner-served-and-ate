@@ -20,6 +20,7 @@ NGINX_VM="${NGINX_VM:-dinner-served-nginx}"
 VM_SIZE="${VM_SIZE:-Standard_B1s}"
 VM_IMAGE="Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest"
 ADMIN_USER="${ADMIN_USER:-azureuser}"
+DB_PRIVATE_IP="${DB_PRIVATE_IP:-}"
 
 GITHUB_REPO="${GITHUB_REPO:-ostemadprinsesse/Dinner-served-and-ate}"
 
@@ -88,6 +89,7 @@ About to provision a dedicated PostgreSQL VM:
   DB port            : $DB_PORT
   Allowed source     : $ALLOW_SOURCE_SUBNET
   SSH jump host      : $NGINX_VM (public IP)
+  Static private IP  : ${DB_PRIVATE_IP:-auto}
   Set GH secrets      : $SET_DB_SECRETS
 
 This will consume Azure credits.
@@ -122,6 +124,10 @@ create_vm() {
   if [[ "$public_ip_mode" == "no-public-ip" ]]; then
     pip_args=(--public-ip-address "")
   fi
+  local private_ip_args=()
+  if [[ -n "$DB_PRIVATE_IP" && "$name" == "$DB_VM" ]]; then
+    private_ip_args=(--private-ip-address "$DB_PRIVATE_IP")
+  fi
   az_cli vm create \
     --resource-group "$RESOURCE_GROUP" \
     --name "$name" \
@@ -132,6 +138,7 @@ create_vm() {
     --vnet-name "$VNET_NAME" \
     --subnet "$SUBNET_NAME" \
     "${pip_args[@]}" \
+    "${private_ip_args[@]}" \
     --output none
 }
 
