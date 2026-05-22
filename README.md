@@ -6,7 +6,7 @@
 A cookbook with hot recipes for your inner diva🫦
 
 Built with **Next.js + React** frontend, **Express** backend, deployed on **Azure VMs** via **Docker** and **GitHub Actions**.
-
+ 
 ---
 
 ## 🚀 Deploy to Azure (step by step)
