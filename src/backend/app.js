@@ -99,9 +99,14 @@ export function createApp(db) {
 
   app.get('/api/recipe/recipes/:id', async (req, res) => {
     try {
+      const recipeId = Number(req.params.id);
+      if (!Number.isInteger(recipeId)) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+
       const recipe = await db('recipes')
         .select('id', 'title', 'description', 'time_minutes', 'price', 'link')
-        .where('id', req.params.id)
+        .where('id', recipeId)
         .first();
 
       if (!recipe) {
