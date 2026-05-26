@@ -17,7 +17,7 @@ SUBNET_CIDR="10.0.1.0/24"
 
 DB_VM="${DB_VM:-dinner-served-db}"
 NGINX_VM="${NGINX_VM:-dinner-served-nginx}"
-VM_SIZE="${VM_SIZE:-Standard_B1s}"
+VM_SIZE="${VM_SIZE:-Standard_B2s_v2}"
 VM_IMAGE="Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest"
 ADMIN_USER="${ADMIN_USER:-azureuser}"
 DB_PRIVATE_IP="${DB_PRIVATE_IP:-}"
