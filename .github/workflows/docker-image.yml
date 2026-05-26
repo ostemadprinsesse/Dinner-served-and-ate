@@ -3,7 +3,7 @@ name: Build and Deploy (Two VMs)
 on:
   push:
   pull_request:
-    branches: ["main"]
+    branches: ["main", "database-migration-merge-branch"]
 
 jobs:
   lint-and-test:
@@ -103,9 +103,9 @@ jobs:
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
           chmod 600 ~/.ssh/ssh_key
 
-      - name: Create backend .env
+      - name: Create backend env
         run: |
-          cat > .env <<EOF
+          cat > .env.backend <<EOF
           GITHUB_OWNER=${GITHUB_OWNER}
           DB_HOST=${DB_HOST}
           DB_PORT=${DB_PORT}
@@ -126,7 +126,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
-            .env "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/.env"
+            .env.backend "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/.env.backend"
 
       - name: Deploy backend on private VM
         run: |
@@ -138,9 +138,9 @@ jobs:
             set -euo pipefail
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
-            docker compose --env-file .env -f docker-compose.backend.yml pull
-            docker compose --env-file .env -f docker-compose.backend.yml down --remove-orphans || true
-            docker compose --env-file .env -f docker-compose.backend.yml up -d
+            docker compose --env-file .env.backend -f docker-compose.backend.yml pull
+            docker rm -f dinner-served-backend 2>/dev/null || true
+            docker compose --env-file .env.backend -f docker-compose.backend.yml up -d
           EOF
 
       - name: Run database migrations and seeds
@@ -179,9 +179,9 @@ jobs:
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
           chmod 600 ~/.ssh/ssh_key
 
-      - name: Create nginx .env
+      - name: Create nginx env
         run: |
-          cat > .env <<EOF
+          cat > .env.nginx <<EOF
           GITHUB_OWNER=${GITHUB_OWNER}
           BACKEND_PRIVATE_IP=${BACKEND_PRIVATE_IP}
           EOF
@@ -195,7 +195,7 @@ jobs:
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            .env "$SSH_USER@$SSH_HOST_NGINX:~/app/.env"
+            .env.nginx "$SSH_USER@$SSH_HOST_NGINX:~/app/.env.nginx"
 
       - name: Deploy nginx and frontend on public VM
         run: |
@@ -203,13 +203,12 @@ jobs:
             set -euo pipefail
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
-            docker compose --env-file .env -f docker-compose.nginx.yml pull
-            docker compose --env-file .env -f docker-compose.nginx.yml down --remove-orphans || true
-            docker ps -q | xargs -r docker stop 2>/dev/null || true
+            docker compose --env-file .env.nginx -f docker-compose.nginx.yml pull
+            docker rm -f dinner-served-nginx dinner-served-frontend 2>/dev/null || true
             sudo systemctl disable --now nginx 2>/dev/null || true
             sudo systemctl disable --now apache2 2>/dev/null || true
             sudo fuser -k 80/tcp 2>/dev/null || true
-            docker compose --env-file .env -f docker-compose.nginx.yml up -d
+            docker compose --env-file .env.nginx -f docker-compose.nginx.yml up -d
           EOF
 
   deploy-monitoring:
