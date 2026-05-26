@@ -65,10 +65,10 @@ SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
 
 | Service | URL |
 |---|---|
-| Website | `http://<nginx-public-ip>` |
-| Swagger UI | `http://<nginx-public-ip>/swagger` |
-| Grafana | `http://<nginx-public-ip>:3000` (admin / admin) |
-| Prometheus | `http://<nginx-public-ip>:9090` |
+| Website | http://20.91.226.221/ |
+| Swagger UI | http://20.91.226.221/swagger |
+| Grafana | http://20.91.226.221:3000 (admin / admin) |
+| Prometheus | http://20.91.226.221:9090 |
 
 ---
 
