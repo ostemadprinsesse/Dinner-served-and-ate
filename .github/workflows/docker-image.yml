@@ -1,4 +1,4 @@
-name: Build and Deploy (Two VMs)
+name: Build and Deploy
 
 on:
   push:
@@ -114,27 +114,24 @@ jobs:
           DB_PASSWORD=${DB_PASSWORD}
           EOF
 
-      - name: Upload backend compose and env via bastion
+      - name: Upload backend compose and env
         run: |
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
-            src/docker-compose.backend.yml "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/docker-compose.backend.yml"
+            src/docker-compose.backend.yml "$SSH_USER@$SSH_HOST_NGINX:~/app/docker-compose.backend.yml"
 
           scp -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
-            .env.backend "$SSH_USER@$BACKEND_PRIVATE_IP:~/app/.env.backend"
+            .env.backend "$SSH_USER@$SSH_HOST_NGINX:~/app/.env.backend"
 
-      - name: Deploy backend on private VM
+      - name: Deploy backend
         run: |
           ssh -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
-            "$SSH_USER@$BACKEND_PRIVATE_IP" << EOF
+            "$SSH_USER@$SSH_HOST_NGINX" << EOF
             set -euo pipefail
             cd ~/app
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
@@ -148,8 +145,7 @@ jobs:
           ssh -i ~/.ssh/ssh_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
-            "$SSH_USER@$BACKEND_PRIVATE_IP" << 'EOF'
+            "$SSH_USER@$SSH_HOST_NGINX" << 'EOF'
             set -euo pipefail
             for i in 1 2 3 4 5; do
               docker exec dinner-served-backend npm run migrate:latest && break || sleep 5
