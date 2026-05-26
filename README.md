@@ -13,32 +13,41 @@ Built with **Next.js + React** frontend, **Express** backend, deployed on **Azur
 
 **Prerequisites:** Azure CLI installed and logged in, SSH key on your machine.
 
-**Step 1 — Provision the VMs**
+
+
+**Step 1 — start frontend + nginx**
 ```bash
 bash infrastructure/setup_azure_vms.sh
 ```
 This creates two Azure VMs (backend + nginx) and prints their public/private IPs.
 
-**Step 2 — Add GitHub Secrets**
+**Step 2 — start Database VM**
+**To start with new PostGres Database vms
+```bash
+bash infrastructure/setup_azure_db_vm.sh 
+```
+When asked for password just use password, the real logins whill be handled via Github Actions next step
 
-Go to your repo → Settings → Secrets and add:
+It will:
+- Create a private DB VM in the same VNet/subnet
+- Install PostgreSQL and create database/user
+- Allow only backend subnet traffic to port 5432
 
-| Secret | Value |
-|---|---|
-| `SSH_PRIVATE_KEY` | contents of your `~/.ssh/id_ed25519` (or id_rsa) |
-| `SSH_USER` | `azureuser` |
-| `SSH_HOST_NGINX` | public IP of the nginx VM |
-| `BACKEND_PRIVATE_IP` | private IP of the backend VM |
-| `CR_PAT` | GitHub personal access token (read/write packages) |
-| `DOCKER_GITHUB_USERNAME` | your GitHub username |
 
-**Step 3 — Push to `main` to deploy**
+**Step 3 - github actions and deploy**
+re run job on GitHub Actions or 
 ```bash
 git push origin main
 ```
 GitHub Actions builds the Docker images, pushes them to GHCR, and deploys to both VMs automatically.
 
-**Step 4 — Open monitoring ports (one-time)**
+**Bonus Step — start monitoring**
+**
+```bash
+bash infrastructure/deploy-monitoring-manual.sh
+```
+
+and then 
 ```bash
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 9090 --priority 1004
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 3000 --priority 1005
@@ -75,15 +84,6 @@ In Prometheus → Status → Targets, `azure-backend` should show as **UP**.
 
 ---
 
-## 🔄 Deployment Strategy
-
-**Rolling restart** — on every push to `main`:
-1. GitHub Actions builds new Docker images and pushes to GHCR
-2. SSHs into the Azure VMs and runs `docker compose pull` + `docker compose down` + `docker compose up -d`
-
-Brief downtime of ~5–10 seconds per deploy. Acceptable for a course project.
-
----
 
 A cookbook with hot recipes for your inner diva🫦 
 
@@ -96,23 +96,6 @@ The application is migrated to **Next.js + React**
 ✨ This project uses Azure VM og nginx✨
 </div>
 
-## Deployment (two VMs via GitHub Actions)
-Use the infra script to provision VMs, then push to `main` to trigger CI/CD.
-
-1. To start deployment with Azure VMs
-  `infrastructure/setup_azure_vms.sh`
-
-2. Push to `main` to deploy
-
-### Optional: Dedicated PostgreSQL VM
-If you want a separate database VM, run this first (same VNet/subnet, no public IP):
-
-`infrastructure/setup_azure_db_vm.sh`
-
-It will:
-- Create a private DB VM in the same VNet/subnet
-- Install PostgreSQL and create database/user
-- Allow only backend subnet traffic to port 5432
 
 Optional GitHub secrets (set by the script if you run it with `SET_DB_SECRETS=1`):
 - `DB_HOST`
@@ -187,6 +170,20 @@ DINNER-SERVED-AND-ATE/
 │
 └── README.md
 ```
+--- 
+## If you are a developer
+Fork the project and add GitHub Secrets: 
+
+| Secret | Value |
+|---|---|
+| `SSH_PRIVATE_KEY` | contents of your `~/.ssh/id_ed25519` (or id_rsa) |
+| `SSH_USER` | `azureuser` |
+| `SSH_HOST_NGINX` | public IP of the nginx VM |
+| `BACKEND_PRIVATE_IP` | private IP of the backend VM |
+| `CR_PAT` | GitHub personal access token (read/write packages) |
+| `DOCKER_GITHUB_USERNAME` | your GitHub username |
+
+
 
 ---
 
