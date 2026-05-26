@@ -205,6 +205,7 @@ jobs:
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
             docker compose --env-file .env -f docker-compose.nginx.yml pull
             docker compose --env-file .env -f docker-compose.nginx.yml down --remove-orphans || true
+            docker ps -q | xargs -r docker stop 2>/dev/null || true
             docker compose --env-file .env -f docker-compose.nginx.yml up -d
           EOF
 
