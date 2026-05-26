@@ -157,9 +157,15 @@ jobs:
             "$SSH_USER@$SSH_HOST_NGINX" << 'EOF'
             set -euo pipefail
             for i in 1 2 3 4 5; do
-              docker exec dinner-served-backend npm run migrate:latest && break || sleep 5
+              if timeout 60 docker exec dinner-served-backend npm run migrate:latest; then
+                break
+              fi
+              if [ "$i" = "5" ]; then
+                exit 1
+              fi
+              sleep 5
             done
-            docker exec dinner-served-backend npm run seed:run
+            timeout 60 docker exec dinner-served-backend npm run seed:run
           EOF
 
   deploy-nginx:
