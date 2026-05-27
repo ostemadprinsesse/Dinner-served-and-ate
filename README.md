@@ -82,12 +82,19 @@ bash infrastructure/teardown_azure_vms.sh
 
 ## 🌐 Live URLs
 
+> ⚠️ Azure tildeler dynamiske IP-adresser. Hent den aktuelle nginx-IP med:
+> ```bash
+> az vm show -d -g rg-dinner-served-and-ate -n dinner-served-nginx --query publicIps -o tsv
+> ```
+
+Erstat `<nginx-ip>` med outputtet ovenfor:
+
 | Service | URL |
 |---|---|
-| Website | http://20.91.226.221/ |
-| Swagger UI | http://20.91.226.221/swagger |
-| Grafana | http://20.91.226.221:3000 (admin / admin) |
-| Prometheus | http://20.91.226.221:9090 |
+| Website | http://\<nginx-ip\>/ |
+| Swagger UI | http://\<nginx-ip\>/swagger |
+| Grafana | http://\<nginx-ip\>:3000 (admin / admin) |
+| Prometheus | http://\<nginx-ip\>:9090 |
 
 ---
 
