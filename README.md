@@ -129,12 +129,16 @@ The pipeline uses these compose files:
 - `src/docker-compose.prod.yml` (buildx bake config)
 
 
-## Deployment live 🤤🍜
-* Frontend - ipadresse coming in hot soon
-* Backend API - //-
-* API Dumentation swagger - -//-
+## ⚠️ Before you deploy — personal settings
 
---- 
+The setup scripts use default values for **location** and **VM size** that may not be available or affordable in your Azure subscription. Check and update these before running:
+
+- **Location** (`LOCATION` in the scripts) — e.g. `swedencentral`, `westeurope`, `northeurope`. Each group member may have different quota or availability.
+- **VM size** (`VM_SIZE` / `DB_VM_SIZE`) — e.g. `Standard_B2s_v2`. If a size is unavailable in your region, try `Standard_B2ms` or check with `az vm list-skus --location <your-location> --output table`.
+
+Each person in the group should verify these values match what is available in their own Azure account before running the infrastructure scripts.
+
+---
 <h2 style="color:#ff69b4;">Tech Stack 🍴</h2>
 
 <h3 style="color:#ff69b4;">Backend 🍴</h3>
