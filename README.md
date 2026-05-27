@@ -51,7 +51,7 @@ Watch progress: `https://github.com/ostemadprinsesse/Dinner-served-and-ate/actio
 
 ---
 
-**Step 5 — Deploy monitoring**
+**Step 4 — Deploy monitoring**
 
 Get your IPs first:
 ```bash
