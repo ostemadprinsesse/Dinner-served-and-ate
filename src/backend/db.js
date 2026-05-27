@@ -1,28 +1,30 @@
-import path from 'node:path';
-import Database from 'better-sqlite3';
+import knex from 'knex';
 
-export const DB_PATH = process.env.DB_PATH ?? path.join(process.cwd(), 'app.db');
-
-// Open a connection using better-sqlite3 (synchronous driver)
-export function openDb() {
-  return new Database(DB_PATH);
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required env var: ${name}`);
+  }
+  return value;
 }
 
-export function allAsync(db, sql, params = []) {
-  return Promise.resolve(db.prepare(sql).all(...params));
-}
+export function createDb() {
+  const host = requireEnv('DB_HOST');
+  const port = Number(process.env.DB_PORT ?? 5432);
+  const user = requireEnv('DB_USER');
+  const password = requireEnv('DB_PASSWORD');
+  const database = requireEnv('DB_NAME');
+  const sslEnabled = process.env.DB_SSL === 'true';
 
-export function getAsync(db, sql, params = []) {
-  return Promise.resolve(db.prepare(sql).get(...params));
-}
-
-export function runAsync(db, sql, params = []) {
-  return new Promise((resolve, reject) => {
-    try {
-      const info = db.prepare(sql).run(...params);
-      resolve({ lastID: info.lastInsertRowid, changes: info.changes });
-    } catch (err) {
-      reject(err);
+  return knex({
+    client: 'pg',
+    connection: {
+      host,
+      port,
+      user,
+      password,
+      database,
+      ssl: sslEnabled ? { rejectUnauthorized: false } : false
     }
   });
 }

@@ -6,48 +6,87 @@
 A cookbook with hot recipes for your inner diva🫦
 
 Built with **Next.js + React** frontend, **Express** backend, deployed on **Azure VMs** via **Docker** and **GitHub Actions**.
-
+ 
 ---
 
 ## 🚀 Deploy to Azure (step by step)
 
-**Prerequisites:** Azure CLI installed and logged in, SSH key on your machine.
+**Prerequisites — install and log in before you start:**
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) → then run `az login`
+- [GitHub CLI](https://cli.github.com/) → then run `gh auth login`
+- An SSH key on your machine — generate one if you don't have it:
+  ```bash
+  ssh-keygen -t ed25519
+  ```
 
-**Step 1 — Provision the VMs**
+> ⚠️ **Note on IP addresses:** Azure assigns **dynamic** IPs by default. The nginx public IP and the private IPs of the backend and DB VMs can change if the VMs are stopped and restarted. Update your secrets and README links if you reprovision.
+
+---
+
+**Step 1 — Create the nginx + backend VMs**
 ```bash
 bash infrastructure/setup_azure_vms.sh
 ```
-This creates two Azure VMs (backend + nginx) and prints their public/private IPs.
+Creates two Azure VMs and sets the required GitHub secrets automatically (`SSH_HOST_NGINX`, `BACKEND_PRIVATE_IP`, `SSH_USER`, `SSH_PRIVATE_KEY`).
 
-**Step 2 — Add GitHub Secrets**
+> If the script says another teammate owns the deployment, ask them to run `bash infrastructure/teardown_azure_vms.sh` first — or force override with `FORCE=1 bash infrastructure/setup_azure_vms.sh`.
 
-Go to your repo → Settings → Secrets and add:
+---
+
+**Step 2 — Create the database VM**
+```bash
+SET_DB_SECRETS=1 bash infrastructure/setup_azure_db_vm.sh
+```
+Creates a private PostgreSQL VM and sets the DB secrets in GitHub automatically (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`). Enter a password when prompted.
+
+---
+
+**Step 3 — Add the two remaining GitHub secrets manually**
+
+Go to: `https://github.com/ostemadprinsesse/Dinner-served-and-ate/settings/secrets/actions`
 
 | Secret | Value |
-|---|---|
-| `SSH_PRIVATE_KEY` | contents of your `~/.ssh/id_ed25519` (or id_rsa) |
-| `SSH_USER` | `azureuser` |
-| `SSH_HOST_NGINX` | public IP of the nginx VM |
-| `BACKEND_PRIVATE_IP` | private IP of the backend VM |
-| `CR_PAT` | GitHub personal access token (read/write packages) |
-| `DOCKER_GITHUB_USERNAME` | your GitHub username |
+|--------|-------|
+| `CR_PAT` | GitHub Personal Access Token with `write:packages` scope ([create one here](https://github.com/settings/tokens)) |
+| `DOCKER_GITHUB_USERNAME` | Your GitHub username |
 
-**Step 3 — Push to `main` to deploy**
+---
+
+**Step 4 — Trigger the deploy**
 ```bash
 git push origin main
 ```
-GitHub Actions builds the Docker images, pushes them to GHCR, and deploys to both VMs automatically.
+GitHub Actions builds the Docker images, pushes them to GHCR, and deploys everything to the VMs automatically.
 
-**Step 4 — Open monitoring ports (one-time)**
+Watch progress: `https://github.com/ostemadprinsesse/Dinner-served-and-ate/actions`
+
+---
+
+**Step 5 — Deploy monitoring**
+
+Get your IPs first:
+```bash
+az vm show -d -g rg-dinner-served-and-ate -n dinner-served-nginx --query publicIps -o tsv
+az vm show -d -g rg-dinner-served-and-ate -n dinner-served-backend --query privateIps -o tsv
+```
+
+Then run (replace with your actual IPs):
+```bash
+SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
+  bash infrastructure/deploy-monitoring-manual.sh
+```
+
+Open the monitoring ports:
 ```bash
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 9090 --priority 1004
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 3000 --priority 1005
 ```
 
-**Step 5 — Deploy monitoring**
+---
+
+**Tear down when done**
 ```bash
-SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
-  bash infrastructure/deploy-monitoring-manual.sh
+bash infrastructure/teardown_azure_vms.sh
 ```
 
 ---
@@ -56,10 +95,10 @@ SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
 
 | Service | URL |
 |---|---|
-| Website | `http://<nginx-public-ip>` |
-| Swagger UI | `http://<nginx-public-ip>/swagger` |
-| Grafana | `http://<nginx-public-ip>:3000` (admin / admin) |
-| Prometheus | `http://<nginx-public-ip>:9090` |
+| Website | http://20.91.226.221/ |
+| Swagger UI | http://20.91.226.221/swagger |
+| Grafana | http://20.91.226.221:3000 (admin / admin) |
+| Prometheus | http://20.91.226.221:9090 |
 
 ---
 
@@ -75,23 +114,45 @@ In Prometheus → Status → Targets, `azure-backend` should show as **UP**.
 
 ---
 
-## 🔄 Deployment Strategy
 
-**Rolling restart** — on every push to `main`:
-1. GitHub Actions builds new Docker images and pushes to GHCR
-2. SSHs into the Azure VMs and runs `docker compose pull` + `docker compose down` + `docker compose up -d`
+A cookbook with hot recipes for your inner diva🫦 
 
-Brief downtime of ~5–10 seconds per deploy. Acceptable for a course project.
+The application deploys with Azure Virtual Machine and uses Docker. 
+The application is migrated to **Next.js + React**
 
----
+--- 
 
+<div style="background-color:#ffe6f2;padding:10px;border-radius:8px; color: Black;">
+✨ This project uses Azure VM og nginx✨
+</div>
+
+
+Optional GitHub secrets (set by the script if you run it with `SET_DB_SECRETS=1`):
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
+The pipeline uses these compose files:
+- `src/docker-compose.backend.yml`
+- `src/docker-compose.nginx.yml`
+- `src/docker-compose.prod.yml` (buildx bake config)
+
+
+## Deployment live 🤤🍜
+* Frontend - ipadresse coming in hot soon
+* Backend API - //-
+* API Dumentation swagger - -//-
+
+--- 
 <h2 style="color:#ff69b4;">Tech Stack 🍴</h2>
 
 <h3 style="color:#ff69b4;">Backend 🍴</h3>
 
 * 🌟 Javascript / Node.js
 * 🍬 Express
-* 🪅 better-SQLite3
+* 🧰 Knex + PostgreSQL
 
 <h3 style="color:#ff69b4;">Frontend 🍴</h3>
 
@@ -120,6 +181,7 @@ DINNER-SERVED-AND-ATE/
 │
 ├── infrastructure/             # Azure provisioning scripts
 │   ├── setup_azure_vms.sh
+│   ├── setup_azure_db_vm.sh
 │   ├── teardown_azure_vms.sh
 │   └── deploy-monitoring-manual.sh
 │
@@ -138,6 +200,20 @@ DINNER-SERVED-AND-ATE/
 │
 └── README.md
 ```
+--- 
+## If you are a developer
+Fork the project and add GitHub Secrets: 
+
+| Secret | Value |
+|---|---|
+| `SSH_PRIVATE_KEY` | contents of your `~/.ssh/id_ed25519` (or id_rsa) |
+| `SSH_USER` | `azureuser` |
+| `SSH_HOST_NGINX` | public IP of the nginx VM |
+| `BACKEND_PRIVATE_IP` | private IP of the backend VM |
+| `CR_PAT` | GitHub personal access token (read/write packages) |
+| `DOCKER_GITHUB_USERNAME` | your GitHub username |
+
+
 
 ---
 
@@ -150,9 +226,9 @@ DINNER-SERVED-AND-ATE/
 
 <h2 style="color:#ff69b4;">Database 🍴</h2>
 
-Uses SQLite (`app.db`). To use your own database, set:
+Uses PostgreSQL via the dedicated DB VM. Configure with:
 ```
-DB_PATH=/path/to/app.db
+DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 ```
 
 ---

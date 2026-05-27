@@ -41,7 +41,7 @@ jobs:
 
   build-images:
     needs: lint-and-test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/grafana')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -87,6 +87,11 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       DOCKER_GITHUB_USERNAME: ${{ secrets.DOCKER_GITHUB_USERNAME }}
       GITHUB_OWNER: ${{ needs.build-images.outputs.github_owner }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - name: Checkout
@@ -102,6 +107,11 @@ jobs:
         run: |
           cat > .env <<EOF
           GITHUB_OWNER=${GITHUB_OWNER}
+          DB_HOST=${DB_HOST}
+          DB_PORT=${DB_PORT}
+          DB_NAME=${DB_NAME}
+          DB_USER=${DB_USER}
+          DB_PASSWORD=${DB_PASSWORD}
           EOF
 
       - name: Upload backend compose and env via bastion
@@ -131,6 +141,20 @@ jobs:
             docker compose --env-file .env -f docker-compose.backend.yml pull
             docker compose --env-file .env -f docker-compose.backend.yml down --remove-orphans || true
             docker compose --env-file .env -f docker-compose.backend.yml up -d
+          EOF
+
+      - name: Run database migrations and seeds
+        run: |
+          ssh -i ~/.ssh/ssh_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ProxyCommand="ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p $SSH_USER@$SSH_HOST_NGINX" \
+            "$SSH_USER@$BACKEND_PRIVATE_IP" << 'EOF'
+            set -euo pipefail
+            for i in 1 2 3 4 5; do
+              docker exec dinner-served-backend npm run migrate:latest && break || sleep 5
+            done
+            docker exec dinner-served-backend npm run seed:run
           EOF
 
   deploy-nginx:
@@ -181,13 +205,17 @@ jobs:
             echo "$CR_PAT" | docker login ghcr.io -u "$DOCKER_GITHUB_USERNAME" --password-stdin
             docker compose --env-file .env -f docker-compose.nginx.yml pull
             docker compose --env-file .env -f docker-compose.nginx.yml down --remove-orphans || true
+            docker ps -q | xargs -r docker stop 2>/dev/null || true
+            sudo systemctl disable --now nginx 2>/dev/null || true
+            sudo systemctl disable --now apache2 2>/dev/null || true
+            sudo fuser -k 80/tcp 2>/dev/null || true
             docker compose --env-file .env -f docker-compose.nginx.yml up -d
           EOF
 
   deploy-monitoring:
     needs: [build-images, deploy-backend]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/grafana')
+    if: github.event_name == 'push'
     env:
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_HOST_NGINX: ${{ secrets.SSH_HOST_NGINX }}

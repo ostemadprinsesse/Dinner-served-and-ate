@@ -5,7 +5,7 @@ Run them with `npm test` from `src/backend/`.
 
 ## Test setup
 
-Two in-memory SQLite databases are created before all tests:
+Two in-memory PostgreSQL databases (pg-mem) are created before all tests:
 
 - **`app`** — seeded with one recipe (Pasta, id=1) with a tag and ingredient, and one bare recipe (Plain, id=2) with no associations.
 - **`emptyApp`** — schema only, no rows.
