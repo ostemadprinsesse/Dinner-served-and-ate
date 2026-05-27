@@ -11,52 +11,82 @@ Built with **Next.js + React** frontend, **Express** backend, deployed on **Azur
 
 ## 🚀 Deploy to Azure (step by step)
 
-**Prerequisites:** Azure CLI installed and logged in, SSH key on your machine.
+**Prerequisites — install and log in before you start:**
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) → then run `az login`
+- [GitHub CLI](https://cli.github.com/) → then run `gh auth login`
+- An SSH key on your machine — generate one if you don't have it:
+  ```bash
+  ssh-keygen -t ed25519
+  ```
 
+> ⚠️ **Note on IP addresses:** Azure assigns **dynamic** IPs by default. The nginx public IP and the private IPs of the backend and DB VMs can change if the VMs are stopped and restarted. Update your secrets and README links if you reprovision.
 
+---
 
-**Step 1 — start frontend + nginx**
+**Step 1 — Create the nginx + backend VMs**
 ```bash
 bash infrastructure/setup_azure_vms.sh
 ```
-This creates two Azure VMs (backend + nginx) and prints their public/private IPs.
+Creates two Azure VMs and sets the required GitHub secrets automatically (`SSH_HOST_NGINX`, `BACKEND_PRIVATE_IP`, `SSH_USER`, `SSH_PRIVATE_KEY`).
 
-**Step 2 — start Database VM**
-**To start with new PostGres Database vms
+> If the script says another teammate owns the deployment, ask them to run `bash infrastructure/teardown_azure_vms.sh` first — or force override with `FORCE=1 bash infrastructure/setup_azure_vms.sh`.
+
+---
+
+**Step 2 — Create the database VM**
 ```bash
-bash infrastructure/setup_azure_db_vm.sh 
+SET_DB_SECRETS=1 bash infrastructure/setup_azure_db_vm.sh
 ```
-When asked for password just use password, the real logins whill be handled via Github Actions next step
+Creates a private PostgreSQL VM and sets the DB secrets in GitHub automatically (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`). Enter a password when prompted.
 
-It will:
-- Create a private DB VM in the same VNet/subnet
-- Install PostgreSQL and create database/user
-- Allow only backend subnet traffic to port 5432
+---
 
+**Step 3 — Add the two remaining GitHub secrets manually**
 
-**Step 3 - github actions and deploy**
-re run job on GitHub Actions or 
+Go to: `https://github.com/ostemadprinsesse/Dinner-served-and-ate/settings/secrets/actions`
+
+| Secret | Value |
+|--------|-------|
+| `CR_PAT` | GitHub Personal Access Token with `write:packages` scope ([create one here](https://github.com/settings/tokens)) |
+| `DOCKER_GITHUB_USERNAME` | Your GitHub username |
+
+---
+
+**Step 4 — Trigger the deploy**
 ```bash
 git push origin main
 ```
-GitHub Actions builds the Docker images, pushes them to GHCR, and deploys to both VMs automatically.
+GitHub Actions builds the Docker images, pushes them to GHCR, and deploys everything to the VMs automatically.
 
-**Bonus Step — start monitoring**
-**
+Watch progress: `https://github.com/ostemadprinsesse/Dinner-served-and-ate/actions`
+
+---
+
+**Step 5 — Deploy monitoring**
+
+Get your IPs first:
 ```bash
-bash infrastructure/deploy-monitoring-manual.sh
+az vm show -d -g rg-dinner-served-and-ate -n dinner-served-nginx --query publicIps -o tsv
+az vm show -d -g rg-dinner-served-and-ate -n dinner-served-backend --query privateIps -o tsv
 ```
 
-and then 
+Then run (replace with your actual IPs):
+```bash
+SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
+  bash infrastructure/deploy-monitoring-manual.sh
+```
+
+Open the monitoring ports:
 ```bash
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 9090 --priority 1004
 az vm open-port -g rg-dinner-served-and-ate -n dinner-served-nginx --port 3000 --priority 1005
 ```
 
-**Step 5 — Deploy monitoring**
+---
+
+**Tear down when done**
 ```bash
-SSH_HOST_NGINX=<nginx-public-ip> BACKEND_PRIVATE_IP=<backend-private-ip> \
-  bash infrastructure/deploy-monitoring-manual.sh
+bash infrastructure/teardown_azure_vms.sh
 ```
 
 ---
