@@ -41,18 +41,7 @@ Creates a private PostgreSQL VM and sets the DB secrets in GitHub automatically 
 
 ---
 
-**Step 3 — Add the two remaining GitHub secrets manually**
-
-Go to: `https://github.com/ostemadprinsesse/Dinner-served-and-ate/settings/secrets/actions`
-
-| Secret | Value |
-|--------|-------|
-| `CR_PAT` | GitHub Personal Access Token with `write:packages` scope ([create one here](https://github.com/settings/tokens)) |
-| `DOCKER_GITHUB_USERNAME` | Your GitHub username |
-
----
-
-**Step 4 — Trigger the deploy**
+**Step 3 — Trigger the deploy**
 ```bash
 git push origin main
 ```
